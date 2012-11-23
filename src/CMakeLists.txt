@@ -10,6 +10,7 @@ ADD_LIBRARY (${LIBRARY_NAME} SHARED
   cubic-interpolation.hh
   cubic-interpolation-se3.cc
   cubic-interpolation-se3.hh
+  oscillator.cc
   )
 
 PKG_CONFIG_USE_DEPENDENCY (${LIBRARY_NAME} sot-core)

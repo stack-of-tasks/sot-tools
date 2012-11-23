@@ -23,6 +23,8 @@ namespace dynamicgraph {
 	CubicInterpolation (const std::string& name);
 	/// Start tracking
 	void start (const double& duration);
+	/// Reset state to 0 before starting a new motion
+	void reset ();
 	/// Documentation
 	virtual std::string getDocString () const;
 	/// Set sampling period of control discretization
@@ -40,15 +42,13 @@ namespace dynamicgraph {
 	int startTime_;
 	double samplingPeriod_;
 	double duration_;
-	bool motionStarted_;
+	// 0: motion not started, 1: motion in progress, 2: motion finished
+	unsigned state_;
 
 	Vector p0_;
 	Vector p1_;
 	Vector p2_;
 	Vector p3_;
-
-	Vector position_;
-	Vector soutdot_;
       }; // class CubicInterpolation
     } // tools
   } // namespace sot

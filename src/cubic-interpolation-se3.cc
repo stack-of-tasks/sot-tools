@@ -5,6 +5,7 @@
 //
 
 #include <dynamic-graph/command.h>
+#include <dynamic-graph/command-bind.h>
 #include <dynamic-graph/command-setter.h>
 #include <dynamic-graph/factory.h>
 
@@ -25,7 +26,7 @@ namespace dynamicgraph {
 	(NULL, "CubicInterpolationSE3("+name+")::input(MatrixHomo)::init"),
 	goalSIN_
 	(NULL, "CubicInterpolationSE3("+name+")::input(MatrixHomo)::goal"),
-	startTime_ (0), samplingPeriod_ (0.), motionStarted_ (false),
+	startTime_ (0), samplingPeriod_ (0.), state_ (0),
 	p0_ (3), p1_ (3), p2_ (3), p3_ (3), position_ (3), soutdot_ (3)
       {
 	signalRegistration (soutSOUT_);
@@ -61,6 +62,16 @@ namespace dynamicgraph {
 	addCommand ("start",
 		    new command::Setter <CubicInterpolationSE3, double>
 		    (*this, &CubicInterpolationSE3::start, docstring));
+	docstring =
+	  "  Reset interpolation before calling start again\n"
+	  "\n"
+	  "    After the end of an interpolation, goal signal is copied into\n"
+	  "    sout signal. Calling reset make the entity copy init signal into\n"
+	  "    sout signal.\n";
+	addCommand ("reset",
+		    command::makeCommandVoid0 (*this,
+					       &CubicInterpolationSE3::reset,
+					       docstring));
       }
 
       CubicInterpolationSE3::~CubicInterpolationSE3 ()
@@ -80,28 +91,38 @@ namespace dynamicgraph {
 	return doc;
       }
 
+      void CubicInterpolationSE3::reset ()
+      {
+	state_ = 0;
+      }
+
       sot::MatrixHomogeneous&
       CubicInterpolationSE3::computeSout (sot::MatrixHomogeneous&
 					  sout, const int& inTime)
       {
-	if (!motionStarted_) {
+	double t;
+	switch (state_) {
+	case 0:
 	  sout = initSIN_.accessCopy ();
-	} else {
-	  double t = (inTime - startTime_) * samplingPeriod_;
-	  if (t <= duration_) {
-	    position_ = p0_ + (p1_ + (p2_ + p3_*t)*t)*t;
-	    sout (0,3) = position_ (0);
-	    sout (1,3) = position_ (1);
-	    sout (2,3) = position_ (2);
-
-	    soutdot_ = p1_ + (p2_*2 + p3_*(3*t))*t;
-	    soutdotSOUT_.setConstant (soutdot_);
-	  } else {
-	    motionStarted_ = false;
-	    soutdot_.setZero ();
-	    soutdotSOUT_.setConstant (soutdot_);
-	    sout = goalSIN_ (inTime);
+	  break;
+	case 1:
+	  t = (inTime - startTime_) * samplingPeriod_;
+	  position_ = p0_ + (p1_ + (p2_ + p3_*t)*t)*t;
+	  sout (0,3) = position_ (0);
+	  sout (1,3) = position_ (1);
+	  sout (2,3) = position_ (2);
+	  soutdot_ = p1_ + (p2_*2 + p3_*(3*t))*t;
+	  soutdotSOUT_.setConstant (soutdot_);
+	  if (t >= duration_) {
+	    state_ = 2;
 	  }
+	  break;
+	case 2:
+	  soutdot_.setZero ();
+	  soutdotSOUT_.setConstant (soutdot_);
+	  sout = goalSIN_.accessCopy ();
+	default:
+	  break;
 	}
 	return sout;
       }
@@ -124,29 +145,28 @@ namespace dynamicgraph {
 				 "CubicInterpolationSE3: samplingPeriod should"
 				 " be positive. Are you sure you did\n"
 				 "initialize it?");
-	int inTime = initSIN_.getTime ();
-	if (!motionStarted_) {
+	if (state_ == 0) {
 	  duration_ = duration;
 	  startTime_ = soutSOUT_.getTime ();
 	  double T = duration;
 	  // Initial position
-	  p0_ (0) = initSIN_ (inTime) (0,3);
-	  p0_ (1) = initSIN_ (inTime) (1,3);
-	  p0_ (2) = initSIN_ (inTime) (2,3);
+	  p0_ (0) = initSIN_.accessCopy () (0,3);
+	  p0_ (1) = initSIN_.accessCopy () (1,3);
+	  p0_ (2) = initSIN_.accessCopy () (2,3);
 	  // Initial velocity
 	  p1_ (0) = 0.;
 	  p1_ (1) = 0.;
 	  p1_ (2) = 0.;
 	  // Goal position
 	  maal::boost::Vector P_T (3);
-	  P_T (0) = goalSIN_ (inTime) (0,3);
-	  P_T (1) = goalSIN_ (inTime) (1,3);
-	  P_T (2) = goalSIN_ (inTime) (2,3);
+	  P_T (0) = goalSIN_.accessCopy () (0,3);
+	  P_T (1) = goalSIN_.accessCopy () (1,3);
+	  P_T (2) = goalSIN_.accessCopy () (2,3);
 	  // Final velocity
 	  maal::boost::Vector D_T (3); D_T.setZero ();
 	  p2_ = (D_T + p1_*2)*(-1./T) + (P_T - p0_)*(3./(T*T));
 	  p3_ = (P_T -p0_)*(-2/(T*T*T)) + (p1_ + D_T)*(1./(T*T));
-	  motionStarted_ = true;
+	  state_ = 1;
 	}
       }
     } // tools

@@ -12,6 +12,7 @@
 # include <dynamic-graph/linear-algebra.h>
 # include <dynamic-graph/signal.h>
 # include <sot/core/matrix-homogeneous.hh>
+# include <sot/core/matrix-rotation.hh>
 
 namespace dynamicgraph {
   namespace sot {
@@ -26,6 +27,8 @@ namespace dynamicgraph {
 	Signal <Vector, int> postureSOUT_;
 	Signal <MatrixHomogeneous, int> leftAnkleSOUT_;
 	Signal <MatrixHomogeneous, int> rightAnkleSOUT_;
+	Signal <Vector, int> leftAnkleVelSOUT_;
+	Signal <Vector, int> rightAnkleVelSOUT_;
 	Signal <Vector, int> comSOUT_;
 	Signal <Vector, int> comdotSOUT_;
 
@@ -42,6 +45,11 @@ namespace dynamicgraph {
 					     const int& t);
 	MatrixHomogeneous& computeRightAnkle (MatrixHomogeneous& ra,
 					      const int& t);
+	Vector& computeAnkleVelocity
+	(Vector& velocity, const std::vector <MatrixHomogeneous>& ankleVector,
+	 const int& t);
+	Vector& computeLeftAnkleVel (Vector& velocity, const int& t);
+	Vector& computeRightAnkleVel (Vector& velocity, const int& t);
 	Vector& computeCom (Vector& com, const int& t);
 	Vector& computeComdot (Vector& comdot, const int& t);
 
@@ -55,6 +63,9 @@ namespace dynamicgraph {
 	std::vector <MatrixHomogeneous> rightAnkle_;
 	std::vector <Vector> com_;
 	std::vector <double> time_;
+
+	// Temporary variables for internal computations
+	MatrixRotation R0_, R0t_, R1_, R1R0t_;
       }; // class Seqplay
     } // namespace tools
   } //namespace sot

@@ -28,13 +28,19 @@ namespace dynamicgraph {
 	Entity (name),
 	postureSOUT_ ("Seqplay(" + name + ")::output(vector)::posture"),
 	leftAnkleSOUT_ ("Seqplay(" + name + ")::output(MatrixHomo)::leftAnkle"),
-	rightAnkleSOUT_ ("Seqplay(" + name + ")::output(MatrixHomo)::rightAnkle"),
+	rightAnkleSOUT_
+	("Seqplay(" + name + ")::output(MatrixHomo)::rightAnkle"),
+	leftAnkleVelSOUT_
+	("Seqplay(" + name + ")::output(Vector)::leftAnkleVel"),
+	rightAnkleVelSOUT_
+	("Seqplay(" + name + ")::output(Vector)::rightAnkleVel"),
 	comSOUT_ ("Seqplay(" + name + ")::output(vector)::com"),
 	comdotSOUT_ ("Seqplay(" + name + ")::output(vector)::comdot"),
 	state_ (0), startTime_ (0), posture_ (), leftAnkle_ (),
-	rightAnkle_ (), com_ (), time_ ()
+	rightAnkle_ (), com_ (), time_ (), R0_ (), R0t_ (), R1_ (), R1R0t_ ()
       {
 	signalRegistration (postureSOUT_ << leftAnkleSOUT_ << rightAnkleSOUT_
+			    << leftAnkleVelSOUT_ << rightAnkleVelSOUT_
 			    << comSOUT_ << comdotSOUT_);
 	postureSOUT_.setFunction (boost::bind (&Seqplay::computePosture,
 					       this, _1, _2));
@@ -43,6 +49,10 @@ namespace dynamicgraph {
 						 this, _1, _2));
 	rightAnkleSOUT_.setFunction (boost::bind (&Seqplay::computeRightAnkle,
 						  this, _1, _2));
+	leftAnkleVelSOUT_.setFunction
+	  (boost::bind (&Seqplay::computeLeftAnkleVel, this, _1, _2));
+	rightAnkleVelSOUT_.setFunction
+	  (boost::bind (&Seqplay::computeRightAnkleVel, this, _1, _2));
 	comdotSOUT_.setFunction (boost::bind (&Seqplay::computeComdot, this, _1,
 					      _2));
 
@@ -302,6 +312,52 @@ namespace dynamicgraph {
 	}
 	ra = rightAnkle_ [configId];
 	return ra;
+      }
+
+      Vector& Seqplay::computeAnkleVelocity
+      (Vector& velocity, const std::vector <MatrixHomogeneous>& ankleVector,
+       const int& t)
+      {
+	velocity.resize (6); velocity.setZero ();
+	std::size_t configId;
+	if (state_ == 0) {
+	  configId = 0;
+	} else if (state_ == 1) {
+	  configId = t - startTime_;
+	  if (configId == com_.size () - 1) {
+	    state_ = 2;
+	  }
+	} else {
+	  configId = posture_.size () -1;
+	}
+
+	if ((0 < configId) && (configId < com_.size () - 1)) {
+	  const MatrixHomogeneous& M1 = ankleVector [configId];
+	  const MatrixHomogeneous& M0 = ankleVector [configId - 1];
+	  double dt = time_ [configId] - time_ [configId -1];
+	  for (std::size_t i=0; i < 3; ++i) {
+	    velocity (i) = (M1 (i, 3) - M0 (i, 3)) / dt;
+	  }
+	  M1.extract (R1_);
+	  M0.extract (R0_);
+	  R0_.transpose (R0t_);
+	  R1_.multiply (R0t_, R1R0t_);
+	  velocity (3) = (R1R0t_ (2, 1))/dt;
+	  velocity (4) = (R1R0t_ (0, 2))/dt;
+	  velocity (5) = (R1R0t_ (1, 0))/dt;
+	}
+
+	return velocity;
+      }
+
+      Vector& Seqplay::computeLeftAnkleVel (Vector& velocity, const int& t)
+      {
+	return computeAnkleVelocity (velocity, leftAnkle_, t);
+      }
+
+      Vector& Seqplay::computeRightAnkleVel (Vector& velocity, const int& t)
+      {
+	return computeAnkleVelocity (velocity, rightAnkle_, t);
       }
 
       Vector& Seqplay::computeCom (Vector& com, const int& t)

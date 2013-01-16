@@ -5,9 +5,6 @@
 //
 
 #include <vector>
-#include <iostream>
-#include <sstream>
-#include <fstream>
 #include <stdexcept>
 #include <boost/tokenizer.hpp>
 
@@ -142,65 +139,8 @@ namespace dynamicgraph {
 	}
 	file [0].close ();
 
-	// Read left ankle
-	lineNumber = 0;
-	while (file [1].good ()) {
-	  std::getline (file [1], line);
-	  ++lineNumber;
-	  tokenizer_t tok (line, escaped_list_separator<char>('\\', '\t', '\"'));
-	  std::vector <double> components;
-	  for(tokenizer_t::iterator it=tok.begin(); it!=tok.end(); ++it) {
-	    components.push_back (atof (it->c_str ()));
-	  }
-	  if (components.size () == 0) break;
-	  if (components.size () != 17) {
-	    std::ostringstream oss;
-	    oss << fn [1] << ", line " << lineNumber
-		<< ": expecting 17 numbers, got "
-		<< components.size () << ".";
-	    throw std::runtime_error (oss.str ());
-	  }
-	  MatrixHomogeneous la;
-	  std::size_t i = 1;
-	  for (std::size_t row = 0; row < 4; ++row) {
-	    for (std::size_t col = 0; col < 4; ++col) {
-	      la (row, col) = components [i];
-	      ++i;
-	    }
-	  }
-	  leftAnkle_.push_back (la);
-	}
-	file [1].close ();
-
-	// Read right ankle
-	lineNumber = 0;
-	while (file [2].good ()) {
-	  std::getline (file [2], line);
-	  ++lineNumber;
-	  tokenizer_t tok (line, escaped_list_separator<char>('\\', '\t', '\"'));
-	  std::vector <double> components;
-	  for(tokenizer_t::iterator it=tok.begin(); it!=tok.end(); ++it) {
-	    components.push_back (atof (it->c_str ()));
-	  }
-	  if (components.size () == 0) break;
-	  if (components.size () != 17) {
-	    std::ostringstream oss;
-	    oss << fn [2] << ", line " << lineNumber
-		<< ": expecting 17 numbers, got"
-		<< components.size () << ".";
-	    throw std::runtime_error (oss.str ());
-	  }
-	  MatrixHomogeneous la;
-	  std::size_t i = 1;
-	  for (std::size_t row = 0; row < 4; ++row) {
-	    for (std::size_t col = 0; col < 4; ++col) {
-	      la (row, col) = components [i];
-	      ++i;
-	    }
-	  }
-	  rightAnkle_.push_back (la);
-	}
-	file [2].close ();
+	readAnkleFile (file [1], leftAnkle_, fn [1]);
+	readAnkleFile (file [2], rightAnkle_, fn [2]);
 
 	// Read com
 	lineNumber = 0;
@@ -428,6 +368,46 @@ namespace dynamicgraph {
 	  "    3. call method start.\n"
 	  "  Warning: pluging signals before loading trajectories will fail.\n";
       }
+
+      void Seqplay::readAnkleFile (std::ifstream& file,
+				   std::vector <MatrixHomogeneous>& data,
+				   const std::string& filename)
+      {
+	using boost::escaped_list_separator;
+	typedef boost::tokenizer<escaped_list_separator<char> > tokenizer_t;
+	unsigned int lineNumber = 0;
+	std::string line;
+
+	while (file.good ()) {
+	  std::getline (file, line);
+	  ++lineNumber;
+	  tokenizer_t tok (line,
+			   escaped_list_separator<char>('\\', '\t', '\"'));
+	  std::vector <double> components;
+	  for(tokenizer_t::iterator it=tok.begin(); it!=tok.end(); ++it) {
+	    components.push_back (atof (it->c_str ()));
+	  }
+	  if (components.size () == 0) break;
+	  if (components.size () != 17) {
+	    std::ostringstream oss;
+	    oss << filename << ", line " << lineNumber
+		<< ": expecting 17 numbers, got "
+		<< components.size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  MatrixHomogeneous la;
+	  std::size_t i = 1;
+	  for (std::size_t row = 0; row < 4; ++row) {
+	    for (std::size_t col = 0; col < 4; ++col) {
+	      la (row, col) = components [i];
+	      ++i;
+	    }
+	  }
+	  data.push_back (la);
+	}
+	file.close ();
+      }
+
 
       DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN (Seqplay, "Seqplay");
     } // namespace tools

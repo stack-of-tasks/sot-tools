@@ -7,6 +7,10 @@
 #ifndef SOT_TOOLS_SEQPLAY_HH
 # define SOT_TOOLS_SEQPLAY_HH
 
+# include <iostream>
+# include <sstream>
+# include <fstream>
+
 # include <dynamic-graph/entity.h>
 # include <dynamic-graph/factory.h>
 # include <dynamic-graph/linear-algebra.h>
@@ -53,6 +57,8 @@ namespace dynamicgraph {
 	Vector& computeCom (Vector& com, const int& t);
 	Vector& computeComdot (Vector& comdot, const int& t);
 
+	void readAnkleFile (std::ifstream&, std::vector <MatrixHomogeneous>&,
+			    const std::string&);
 	// 0: motion not started, 1: motion in progress, 2: motion finished
 	unsigned int state_;
 	unsigned int configId_;

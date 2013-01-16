@@ -33,12 +33,17 @@ namespace dynamicgraph {
 	("Seqplay(" + name + ")::output(Vector)::rightAnkleVel"),
 	comSOUT_ ("Seqplay(" + name + ")::output(vector)::com"),
 	comdotSOUT_ ("Seqplay(" + name + ")::output(vector)::comdot"),
+	forceLeftFootSOUT_
+	("Seqplay(" + name + ")::output(vector)::forceLeftFoot"),
+	forceRightFootSOUT_
+	("Seqplay(" + name + ")::output(vector)::forceRightFoot"),
 	state_ (0), startTime_ (0), posture_ (), leftAnkle_ (),
 	rightAnkle_ (), com_ (), time_ (), R0_ (), R0t_ (), R1_ (), R1R0t_ ()
       {
 	signalRegistration (postureSOUT_ << leftAnkleSOUT_ << rightAnkleSOUT_
 			    << leftAnkleVelSOUT_ << rightAnkleVelSOUT_
-			    << comSOUT_ << comdotSOUT_);
+			    << comSOUT_ << comdotSOUT_
+			    << forceLeftFootSOUT_ << forceRightFootSOUT_);
 	postureSOUT_.setFunction (boost::bind (&Seqplay::computePosture,
 					       this, _1, _2));
 	comSOUT_.setFunction (boost::bind (&Seqplay::computeCom, this, _1, _2));
@@ -52,6 +57,11 @@ namespace dynamicgraph {
 	  (boost::bind (&Seqplay::computeRightAnkleVel, this, _1, _2));
 	comdotSOUT_.setFunction (boost::bind (&Seqplay::computeComdot, this, _1,
 					      _2));
+	forceLeftFootSOUT_.setFunction
+	  (boost::bind (&Seqplay::computeForceLeftFoot, this, _1, _2));
+	forceRightFootSOUT_.setFunction
+	  (boost::bind (&Seqplay::computeForceRightFoot, this, _1, _2));
+
 
 	std::string docstring =
 	  "Load files describing a whole-body motion as reference feature "
@@ -64,7 +74,9 @@ namespace dynamicgraph {
 	  "    - posture from file \"filename.posture\",\n"
 	  "    - left ankle task from \"filename.la\",\n"
 	  "    - right ankle task from \"filename.ra\",\n"
-	  "    - center of mass task from \"filename.com\".\n"
+	  "    - center of mass task from \"filename.com\",\n"
+	  "    - force and moment in left foot from \"filename.fl\",\n"
+	  "    - force and moment in right foot from \"filename.fr\".\n"
 	  "  Each file should contain one column for time and as many columns as"
 	  " required\n"
 	  "  depending on data-type, i.e.:\n"
@@ -85,8 +97,8 @@ namespace dynamicgraph {
 	using boost::escaped_list_separator;
 	typedef boost::tokenizer<escaped_list_separator<char> > tokenizer_t;
 	std::string line;
-	std::string fn [4];
-	std::ifstream file [4];
+	std::string fn [6];
+	std::ifstream file [6];
 	unsigned int lineNumber = 0;
 	int postureSize = -2;
 
@@ -94,9 +106,11 @@ namespace dynamicgraph {
 	fn [1] = filename + ".la";
 	fn [2] = filename + ".ra";
 	fn [3] = filename + ".com";
+	fn [4] = filename + ".fl";
+	fn [5] = filename + ".fr";
 
 	// Open files
-	for (std::size_t i=0; i<4; i++) {
+	for (std::size_t i=0; i<6; i++) {
 	  file [i].open (fn [i].c_str ());
 	  if (!file [i].is_open ()) {
 	    throw std::runtime_error (std::string ("Failed to open file ") +
@@ -107,6 +121,8 @@ namespace dynamicgraph {
 	leftAnkle_.clear ();
 	rightAnkle_.clear ();
 	com_.clear ();
+	forceLeftFoot_.clear ();
+	forceRightFoot_.clear ();
 
 	// Read posture
 	while (file [0].good ()) {
@@ -167,12 +183,33 @@ namespace dynamicgraph {
 	}
 	file [3].close ();
 
+	// Read forces
+	readForceFile (file [4], forceLeftFoot_, fn [4]);
+	readForceFile (file [5], forceRightFoot_, fn [5]);
+
 	// Check that size of files is the same
 	if (posture_.size () != leftAnkle_.size () ||
 	    posture_.size () != rightAnkle_.size () ||
-	    posture_.size () != com_.size ()) {
-	  throw std::runtime_error
-	    ("Seqplay: Files should be of same number of lines.");
+	    posture_.size () != com_.size () ||
+	    posture_.size () != forceLeftFoot_.size () ||
+	    posture_.size () != forceRightFoot_.size ()) {
+	  std::ostringstream oss;
+	  oss << "Seqplay: Files should have the same number of lines. Read"
+	      << std::endl;
+	  oss << "  " << posture_.size () << " lines from " << filename
+	      << ".posture," << std::endl;
+	  oss << "  " << leftAnkle_.size () << " lines from " << filename
+	      << ".la," << std::endl;
+	  oss << "  " << rightAnkle_.size () << " lines from " << filename
+	      << ".ra," << std::endl;
+	  oss << "  " << com_.size () << " lines from " << filename << ".com,"
+	      << std::endl;
+	  oss << "  " << forceLeftFoot_.size () << " lines from " << filename
+	      << ".fl, and"
+	      << std::endl;
+	  oss << "  " << forceRightFoot_.size () << " lines from " << filename
+	      << ".fr.";
+	  throw std::runtime_error (oss.str ());
 	}
 	state_ = 0;
       }
@@ -350,6 +387,38 @@ namespace dynamicgraph {
 	return comdot;
       }
 
+      Vector& Seqplay::computeForceFoot
+      (Vector& force, const std::vector <Vector>& forceVector, const int& t)
+      {
+	if (forceVector.size () == 0) {
+	  throw std::runtime_error
+	    ("Seqplay: Signals not initialized. read files first.");
+	}
+	std::size_t configId;
+	if (state_ == 0) {
+	  configId = 0;
+	} else if (state_ == 1) {
+	  configId = t - startTime_;
+	  if (configId == forceVector.size () - 1) {
+	    state_ = 2;
+	  }
+	} else {
+	  configId = posture_.size () -1;
+	}
+	force = forceVector [configId];
+	return force;
+      }
+
+      Vector& Seqplay::computeForceLeftFoot (Vector& force, const int& t)
+      {
+	return computeForceFoot (force, forceLeftFoot_, t);
+      }
+
+      Vector& Seqplay::computeForceRightFoot (Vector& force, const int& t)
+      {
+	return computeForceFoot (force, forceRightFoot_, t);
+      }
+
       std::string Seqplay::getDocString () const
       {
 	return
@@ -404,6 +473,41 @@ namespace dynamicgraph {
 	    }
 	  }
 	  data.push_back (la);
+	}
+	file.close ();
+      }
+
+      void Seqplay::readForceFile (std::ifstream& file,
+				   std::vector <Vector>& data,
+				   const std::string& filename)
+      {
+	using boost::escaped_list_separator;
+	typedef boost::tokenizer<escaped_list_separator<char> > tokenizer_t;
+	unsigned int lineNumber = 0;
+	std::string line;
+
+	while (file.good ()) {
+	  std::getline (file, line);
+	  ++lineNumber;
+	  tokenizer_t tok (line,
+			   escaped_list_separator<char>('\\', '\t', '\"'));
+	  std::vector <double> components;
+	  for(tokenizer_t::iterator it=tok.begin(); it!=tok.end(); ++it) {
+	    components.push_back (atof (it->c_str ()));
+	  }
+	  if (components.size () == 0) break;
+	  if (components.size () != 7) {
+	    std::ostringstream oss;
+	    oss << filename << ", line " << lineNumber
+		<< ": expecting 7 numbers, got "
+		<< components.size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  Vector force (6);
+	  for (std::size_t i = 1; i < 7; ++i) {
+	    force (i-1) = components [i];
+	  }
+	  data.push_back (force);
 	}
 	file.close ();
       }

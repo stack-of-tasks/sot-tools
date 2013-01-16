@@ -35,6 +35,8 @@ namespace dynamicgraph {
 	Signal <Vector, int> rightAnkleVelSOUT_;
 	Signal <Vector, int> comSOUT_;
 	Signal <Vector, int> comdotSOUT_;
+	Signal <Vector, int> forceLeftFootSOUT_;
+	Signal <Vector, int> forceRightFootSOUT_;
 
 	DYNAMIC_GRAPH_ENTITY_DECL();
 	Seqplay (const std::string& name);
@@ -56,8 +58,14 @@ namespace dynamicgraph {
 	Vector& computeRightAnkleVel (Vector& velocity, const int& t);
 	Vector& computeCom (Vector& com, const int& t);
 	Vector& computeComdot (Vector& comdot, const int& t);
+	Vector& computeForceFoot (Vector&, const std::vector <Vector>&,
+				  const int&);
+	Vector& computeForceLeftFoot (Vector& force, const int& t);
+	Vector& computeForceRightFoot (Vector& force, const int& t);
 
 	void readAnkleFile (std::ifstream&, std::vector <MatrixHomogeneous>&,
+			    const std::string&);
+	void readForceFile (std::ifstream&, std::vector <Vector>&,
 			    const std::string&);
 	// 0: motion not started, 1: motion in progress, 2: motion finished
 	unsigned int state_;
@@ -68,6 +76,8 @@ namespace dynamicgraph {
 	std::vector <MatrixHomogeneous> leftAnkle_;
 	std::vector <MatrixHomogeneous> rightAnkle_;
 	std::vector <Vector> com_;
+	std::vector <Vector> forceLeftFoot_;
+	std::vector <Vector> forceRightFoot_;
 	std::vector <double> time_;
 
 	// Temporary variables for internal computations

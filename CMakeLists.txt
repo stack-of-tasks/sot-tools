@@ -10,6 +10,7 @@ INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/python.cmake)
 
 FINDPYTHON ()
+FIND_NUMPY ()
 
 SET(PROJECT_NAME sot-tools)
 SET(PROJECT_DESCRIPTION "Miscellanous entities for the stack of tasks")

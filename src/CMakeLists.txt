@@ -22,5 +22,6 @@ INSTALL (TARGETS ${LIBRARY_NAME} DESTINATION lib)
 INSTALL(FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/__init__.py
   ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/se3.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/quaternion.py
   DESTINATION ${PYTHON_SITELIB}/dynamic_graph/sot/tools
   )

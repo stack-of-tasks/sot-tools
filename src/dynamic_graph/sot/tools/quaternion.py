@@ -38,7 +38,7 @@ class Quaternion (object):
         return Quaternion(self.a.conjugate(),-self.b)
  
     def __div__(self,other):
-        return self.conjugate()*(1./abs(other)**2*other)
+        return self*(1./abs(other)**2*other.conjugate ())
  
     def __pow__(self,n):
         r=1

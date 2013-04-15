@@ -30,17 +30,14 @@ class R3 (object):
     """
     def __init__(self, *args):
         if len(args) == 1:
-            #constructor by tuple
-            if isinstance(args[0], tuple):
-                self.value = args[0]
-            elif isinstance(args[0], R3):
+            if isinstance(args[0], R3):
                 #copy constructor
                 self.value = args[0].value
+            #constructor by tuple
             else:
-                raise TypeError("constructor of R3 takes either three float,"+
-                                " a tuple of three float or an instance of R.")
+                self.value = numpy.array (map (float, args[0]))
         elif len(args) == 3:
-            self.value = args
+            self.value = numpy.array (map (float, args))
         else:
             raise TypeError("constructor of R3 takes either three float,"+
                             ", an instance of R or a tuple of three float.")
@@ -50,9 +47,8 @@ class R3 (object):
         """
         Check that instance is well defined.
         """
-        for x in self.value:
-            if not isinstance(x, float):
-                raise TypeError("coordinates should be of type float.")
+        if len (self.value) != 3:
+            raise TypeError ("R3 object should be of length 3")
 
     def checkOther(self, other, operator):
         """
@@ -104,13 +100,19 @@ class R3 (object):
         """
         Output as a string
         """
-        return "(%f,%f,%f)"%self.value
+        return "({0},{1},{2})".format (*self.value)
 
     def __getitem__(self, index):
         """
         Access by []
         """
         return self.value[index]
+
+    def __setitem__(self, index, value):
+        """
+        Access by []
+        """
+        self.value[index] = value
 
     def multiplyByConstant(self, constant):
         """
@@ -129,23 +131,18 @@ class SO3 (object):
     Rotation matrix
     """
     def __init__(self, matrix):
-        if isinstance(matrix, tuple):
-            self.value = self.fromTuple(matrix)
-        elif isinstance(matrix, SO3):
+        if isinstance(matrix, SO3):
             self.value = matrix.value
         else:
-            raise TypeError("expecting a tuple of "+
-                            "3 tuples of 3 float or an instance of SO3.")
+            self.value = self.fromTuple (matrix)
 
-    def fromTuple(self, matrix):
+    def fromTuple (self, matrix):
         if len(matrix) != 3:
             raise TypeError("expecting a tuple of "+
                             "3 tuples of 3 float, got a tuple of length %i."%
                             len(matrix))
         m = []
         for r in matrix:
-            if not isinstance(r, tuple) and not isinstance(r, R3):
-                raise TypeError("expecting tuple of 3 float or instance of R3.")
             if len(r) != 3:
                 raise TypeError("expecting tuple of 3 float or instance of R3.")
             m.append(R3(r[0], r[1], r[2]))

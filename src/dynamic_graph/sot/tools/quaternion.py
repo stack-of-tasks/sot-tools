@@ -1,11 +1,21 @@
 from math import hypot, sqrt, asin
+import numpy
 from dynamic_graph.sot.tools.se3 import SO3
  
 class Quaternion (object):
-    def __init__(self,a,b):
-        self.a=a
-        self.b=b
- 
+    def __init__(self,*args):
+        if len (args) == 2:
+            self.a=args [0]
+            self.b=args [1]
+        elif len (args) == 4:
+            self.a = complex (args [0], args [1])
+            self.b = complex (args [2], args [3])
+        elif len (args) == 1:
+            self.a = complex (args [0][0], args [0][1])
+            self.b = complex (args [0][2], args [0][3])
+        else:
+            raise TypeError ("Expecting 4 float or 2 Complex numbers or a sequence of float")
+
     def __str__(self):
         aff='('
         aff+=str(self.a.real)+')+('

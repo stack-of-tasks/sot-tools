@@ -56,6 +56,9 @@ class Quaternion (object):
                 r=r*self
         return r
 
+    def __array__ (self):
+        return numpy.array ([self.a.real, self.a.imag, self.b.real, self.b.imag])
+
     def normalize (self):
         norm = abs (self)
         self.a /= norm;

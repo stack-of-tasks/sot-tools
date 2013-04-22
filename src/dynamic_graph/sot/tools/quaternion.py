@@ -5,32 +5,55 @@ from dynamic_graph.sot.tools.se3 import SO3
 class Quaternion (object):
     """
     Quaternion class :
-    -----------------
+    ------------------
+
     A quaternion has a scalar part and a vector part. 
     In this class the quaternion is represented as an array of 4 elements :
-        - the first element is the scalar part
-        - the next 3 elements represents the vector part
+      - the first element is the scalar part
+      - the next 3 elements represents the vector part
 
     One can acces to the array directly with the attribute "array"
-        e.g. q1=Quaternion(1,0,0,0) --> q1.array
+      e.g. q1=Quaternion(1,0,0,0) --> q1.array
 
-    A quaternion can be instanciated with 1, 2 or 4 elements (see : __init__())
-    and can return a rotation vector, a rotation matrix, a SO3 ... (see the methods : to...())
+    A quaternion can be instanciated with 1, 2 or 4 elements 
+      (see : __init__() for more information).
+
+    It can also return a rotation vector, a rotation matrix, or a SO3 
+      (see the methods : to...() for more information).
     """
     def __init__(self,*args):
         """
-        Instanciation of the quaternion with 1,2 or 4 arguments  :
-        This creates a 4 sized array (self.array) representing the quaternion with the first element representing the scalar part and the 3 others the vector part.  
+        Instanciation of the quaternion with 1, 2 or 4 arguments  :
+        -----------------------------------------------------------
+        This creates a 4-sized array (self.array) representing the quaternion
+        with the first element representing the scalar part 
+        and the 3 others the vector part.  
+
         With 4 arguments :
-        - the first one is the scalar part, the other three the vector part.
-        With 1 argument : 
-        - if it is a quaternion it will create a copy of this quaternion.
-        - if it is a scalar, the scalar will be used as the scalar part and the vector part will be set at (0,0,0).
-        - if it is an array, matrix, tuple or list of 4 elements, the first element is used as scalar part and the rest as vector part.
-        - if it is an array, matrix, tuple or list of 3 elements, the 3 elements are interpreted as a rotation vector.
-        - if it is a to 2 dimension array convertible array, matrix, tuple or list with at least (3*3)elements, the upper left (3*3) elements are interpreted  as a rotation matrix.
+        ------------------
+          - the first one is used as the scalar part, 
+            the other three as the vector part.
+
         With 2 arguments :
-        - the 1-sized argument is used as scalar part, the 3-sized argument is used as vector part.
+        ------------------
+          - the 1-sized argument is used as the scalar part,
+            the 3-sized argument is used as the vector part.
+
+        With 1 argument : 
+        -----------------
+          - if it is a quaternion it will create a copy of this quaternion.
+          - if it is a scalar, the scalar will be used as the scalar part
+            and the vector part will be set at (0,0,0).
+          - if it is an array, matrix, tuple or list of 4 elements,
+            the first element is used as the scalar part
+            and the rest as the vector part.
+          - if it is an array, matrix, tuple or list of 3 elements,
+            the 3 elements are interpreted as a rotation vector,
+            this creates a quaternion representing the same rotation.
+          - if it is a to 2 dimension array convertible array, matrix, tuple 
+            or list with at least (3*3) elements, 
+            the upper left (3*3) elements are interpreted as a rotation matrix,
+            this creates a quaternion representing the same rotation.
         """
         error=False
 
@@ -70,28 +93,28 @@ class Quaternion (object):
                         q[2]=(rM[0,2]-rM[2,0])/q[0]
                         q[3]=(rM[1,0]-rM[0,1])/q[0]
                         self.array=q*0.5
-                        print '--1--V3'
+                        # print '--1--V3'
                     elif param==1:
                         q[1]=np.sqrt(selec[param])
                         q[0]=(rM[2,1]-rM[1,2])/q[1]
                         q[2]=(rM[1,0]+rM[0,1])/q[1]
                         q[3]=(rM[0,2]+rM[2,0])/q[1]
                         self.array=q*0.5
-                        print '--2--V3'
+                        # print '--2--V3'
                     elif param==2:
                         q[2]=np.sqrt(selec[param])
                         q[0]=(rM[0,2]-rM[2,0])/q[2]
                         q[1]=(rM[1,0]+rM[0,1])/q[2]
                         q[3]=(rM[2,1]+rM[1,2])/q[2]
                         self.array=q*0.5
-                        print '--3--V3'
+                        # print '--3--V3'
                     elif param==3:
                         q[3]=np.sqrt(selec[param])
                         q[0]=(rM[1,0]-rM[0,1])/q[3]
                         q[1]=(rM[0,2]+rM[2,0])/q[3]
                         q[2]=(rM[2,1]+rM[1,2])/q[3]
                         self.array=q*0.5
-                        print '--4--V3'
+                        # print '--4--V3'
                 else:
                     error=True
             else:
@@ -123,21 +146,23 @@ class Quaternion (object):
         String representation of the quaternion.
         """
         aff='[ '
-        aff+=str(self.array [0])+'   '
-        aff+=str(self.array [1])+' *i   '
-        aff+=str(self.array [2])+' *j   '
-        aff+=str(self.array [3])+' *k ]'
+        aff+=str(self.array [0])+'  +  '
+        aff+=str(self.array [1])+' i  +  '
+        aff+=str(self.array [2])+' j  +  '
+        aff+=str(self.array [3])+' k ]'
         return aff
  
     def __neg__(self):
         """
-        Returns a quaternion which elements are the opposite of the original (this opposite quaternion represents the same rotation).
+        Returns a quaternion which elements are the opposite of the original,
+        (this opposite quaternion represents the same rotation).
         """
         return Quaternion(-self.array)
  
     def __add__(self,other):
         """
-        If other is not a quaternion it is casted to a quaternion and the elements are added one to one.
+        If other is not a quaternion it is casted to a quaternion, 
+        the elements are added one to one.
         """
         if type(other)!=Quaternion:
             q2=Quaternion(other)
@@ -147,7 +172,8 @@ class Quaternion (object):
  
     def __sub__(self,other):
         """
-        If other is not a quaternion it is casted to a quaternion and the elements are substracted one to one.
+        If other is not a quaternion it is casted to a quaternion, 
+        the elements are substracted one to one.
         """
         if type(other)!=Quaternion:
             q2=Quaternion(other)
@@ -157,7 +183,8 @@ class Quaternion (object):
  
     def __mul__(self,other):
         """
-        If other is not a quaternion it is casted to a quaternion and the result of the quaternion multiplication is returned.
+        If other is not a quaternion it is casted to a quaternion, 
+        the result of the quaternion multiplication is returned.
         """
         if type(other)!=Quaternion:
             q2=Quaternion(other)
@@ -170,7 +197,8 @@ class Quaternion (object):
 
     def __rmul__(self,other):
         """
-        other is casted to a quaternion and the result of the quaternion multiplication is returned.
+        other is casted to a quaternion, 
+        the result of the quaternion multiplication is returned.
         """
         return  Quaternion(other)*self
  
@@ -194,7 +222,9 @@ class Quaternion (object):
  
     def __div__(self,other):
         """
-        If other is not a quaternion it is casted to a quaternion and the result of the quaternion multiplication with the inverse of other is returned.
+        If other is not a quaternion it is casted to a quaternion, 
+        the result of the quaternion multiplication with the inverse of other 
+        is returned.
         """
         if type(other)!=Quaternion:
             q2=Quaternion(other)
@@ -213,34 +243,32 @@ class Quaternion (object):
 
     def normalize (self):
         """
-        Changes the values of the quaternion to make it a unit quaternion representing the same rotation as the original one and returns the updated version. 
+        Changes the values of the quaternion to make it a unit quaternion 
+        representing the same rotation as the original one 
+        and returns the updated version. 
         """
         self.array /= abs(self);
         return self
 
     def normalized (self):
         """
-        Returns the unit quaternion representation of the quaternion without changing the original. 
+        Returns the unit quaternion representation of the quaternion 
+        without changing the original. 
         """
         qr=Quaternion(self)
         qr.normalize()
         return qr
 
-    def toMatrix (self):
-        """
-        Returns the corresponding rotation matrix as a tuple.
-        """
-        return tuple (map (tuple, self.toRotationMatrix()))
-
     def toSO3 (self):
         """
         Returns the corresponding SO3.
         """
-        return SO3 (self.toMatrix())
+        return SO3 (self.toRotationMatrix())
 
     def toRotationMatrix(self):
         """
-        Returns a (3*3) array representing the same rotation as the (normalized) quaternion.
+        Returns a (3*3) array (rotation matrix)
+        representing the same rotation as the (normalized) quaternion.
         """
         q=self.normalized().array
         rm=np.zeros((3,3))
@@ -257,7 +285,8 @@ class Quaternion (object):
 
     def toRotationVector(self):
         """
-        Returns a 3-sized array representing the same rotation as the (normalized) quaternion as a rotation vector.
+        Returns a 3-sized array (rotation vector)
+        representing the same rotation as the (normalized) quaternion.
         """
         q=self.normalized().array
         rV=np.zeros(3)

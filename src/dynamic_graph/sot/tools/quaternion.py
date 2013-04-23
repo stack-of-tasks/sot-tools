@@ -54,10 +54,25 @@ class Quaternion (object):
             or list with at least (3*3) elements, 
             the upper left (3*3) elements are interpreted as a rotation matrix,
             this creates a quaternion representing the same rotation.
-        """
-        error=False
 
-        if len (args) == 4: # From 4 elements
+        With 0 arguments :
+        ------------------
+        If no argument is given, than the quaternion will be set by default 
+        to with the scalar part set to 1 and the vector part to (0,0,0).
+        (this is the neutral element for multiplication in quaternion space)
+
+        To create a quaternion from Roll, Pitch, Yaw angles :
+        -----------------------------------------------------
+        first instanciate a quaternion and than use the method fromRPY() 
+        to change the values of it to the dezired ones.
+          e.g. : quat().fromRPY(R,P,Y)
+        """
+
+
+        error=False
+        if len(args)==0: # By default, if no argument is given
+            self.array=np.array([1.,0.,0.,0.])
+        elif len (args) == 4: # From 4 elements
             if np.array(args).size==4:
                 self.array = np.double(np.array (args))
             else:
@@ -132,6 +147,7 @@ class Quaternion (object):
                 self.array[1:4]=arg0[:]
             else:
                 error=True
+
         else:
             error=True
             
@@ -236,7 +252,7 @@ class Quaternion (object):
         """
         Returns quaternion**n with quaternion**0 = Quaternion(1,0,0,0).
         """
-        r=Quaternion(1)
+        r=Quaternion()
         for i in range(n):
                 r=r*self
         return r
@@ -300,3 +316,45 @@ class Quaternion (object):
         Returns a copy of the quaternion.
         """
         return Quaternion(self)
+
+    def toRPY(self):
+        """
+        Returns a 3-sized array with representing the same rotation 
+        as the (normalized) quaternion. With :
+          - the first element representing the Roll, 
+          - the second the Pitch 
+          - the third the Yaw  
+        Where Roll Pitch and Yaw are the angles so that the rotation 
+        with the quaternion represents the same rotation as :
+          - A rotation of R (Roll) about the original x-axis,
+            followed by a rotation of P (Pitch) about the original y-axis,
+            followed by a rotation of Y (Yaw) about the original z-axis.
+          - Or otherwise a rotation of Y about the original z-axis,
+            followed by a rotation of P about the new y-axis,
+            followed by a rotation of R about the new x-axis.
+        """
+        q=self.normalized().array
+        r=np.arctan2(2*(q[0]*q[1]+q[2]*q[3]),1-2*(q[1]**2+q[2]**2))
+        p=np.arctan2(2*(q[0]*q[2]-q[3]*q[1]),np.sqrt((2*(q[0]*q[1]+q[2]*q[3]))**2+(1-2*(q[1]**2+q[2]**2))**2)) # We cas use arcsin but arctan2 is more robust 
+        y=np.arctan2(2*(q[0]*q[3]+q[1]*q[2]),1-2*(q[2]**2+q[3]**2))
+        return np.array([r,p,y])
+
+    def fromRPY(self,R,P,Y):
+        """
+        Set the values of the quaternion to the values of a unit quaternion 
+        representing the same rotation as the one performed by Roll Pitch Yaw :
+          - A rotation of R (Roll) about the original x-axis,
+            followed by a rotation of P (Pitch) about the original y-axis,
+            followed by a rotation of Y (Yaw) about the original z-axis.
+          - Or otherwise a rotation of Y about the original z-axis,
+            followed by a rotation of P about the new y-axis,
+            followed by a rotation of R about the new x-axis.
+        """
+        r=R/2.
+        p=P/2.
+        y=Y/2.
+        self.array[0]=np.cos(r)*np.cos(p)*np.cos(y)+np.sin(r)*np.sin(p)*np.sin(y)
+        self.array[1]=np.sin(r)*np.cos(p)*np.cos(y)-np.cos(r)*np.sin(p)*np.sin(y)
+        self.array[2]=np.cos(r)*np.sin(p)*np.cos(y)+np.sin(r)*np.cos(p)*np.sin(y)
+        self.array[3]=np.cos(r)*np.cos(p)*np.sin(y)-np.sin(r)*np.sin(p)*np.cos(y)
+        return self.normalize()

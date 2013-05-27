@@ -20,7 +20,6 @@ DYNAMIC_GRAPH_PYTHON_MODULE ("sot/tools" ${LIBRARY_NAME} wrap)
 INSTALL (TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 INSTALL(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/__init__.py
   ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/se3.py
   ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/quaternion.py
   DESTINATION ${PYTHON_SITELIB}/dynamic_graph/sot/tools

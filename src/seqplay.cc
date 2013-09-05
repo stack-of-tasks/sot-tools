@@ -137,7 +137,7 @@ namespace dynamicgraph {
 	    break;
 	  }
 	  if (postureSize == -2) {
-	    postureSize = components.size () - 1;
+	    postureSize = static_cast<int> (components.size () - 1);
 	  } else {
 	    if (postureSize != static_cast <int> (components.size ()) - 1) {
 	      std::ostringstream oss;
@@ -147,9 +147,9 @@ namespace dynamicgraph {
 	      throw std::runtime_error (oss.str ());
 	    }
 	  }
-	  Vector config (components.size () - 1);
-	  for (std::size_t i=1; i<components.size (); ++i) {
-	    config (i-1) = components [i];
+	  Vector config (static_cast<unsigned> (components.size () - 1));
+	  for (unsigned i = 1; i < components.size (); ++i) {
+	    config (i - 1) = components[i];
 	  }
 	  posture_.push_back (config);
 	}
@@ -176,7 +176,7 @@ namespace dynamicgraph {
 	    throw std::runtime_error (oss.str ());
 	  }
 	  time_.push_back (components [0]);
-	  for (std::size_t i=1; i<4; ++i) {
+	  for (unsigned i = 1; i < 4; ++i) {
 	    com (i-1) = components [i];
 	  }
 	  com_.push_back (com);
@@ -312,7 +312,7 @@ namespace dynamicgraph {
 	  const MatrixHomogeneous& M1 = ankleVector [configId];
 	  const MatrixHomogeneous& M0 = ankleVector [configId - 1];
 	  double dt = time_ [configId] - time_ [configId -1];
-	  for (std::size_t i=0; i < 3; ++i) {
+	  for (unsigned i=0; i < 3; ++i) {
 	    velocity (i) = (M1 (i, 3) - M0 (i, 3)) / dt;
 	  }
 	  M1.extract (R1_);
@@ -380,7 +380,7 @@ namespace dynamicgraph {
 	  const Vector& q_1 = com_ [configId];
 	  const Vector& q_0 = com_ [configId - 1];
 	  double dt = time_ [configId] - time_ [configId -1];
-	  for (std::size_t i=0; i < comdot.size (); ++i) {
+	  for (unsigned i=0; i < comdot.size (); ++i) {
 	    comdot (i) = (q_1 (i) - q_0 (i)) / dt;
 	  }
 	}
@@ -466,8 +466,8 @@ namespace dynamicgraph {
 	  }
 	  MatrixHomogeneous la;
 	  std::size_t i = 1;
-	  for (std::size_t row = 0; row < 4; ++row) {
-	    for (std::size_t col = 0; col < 4; ++col) {
+	  for (unsigned row = 0; row < 4; ++row) {
+	    for (unsigned col = 0; col < 4; ++col) {
 	      la (row, col) = components [i];
 	      ++i;
 	    }
@@ -504,7 +504,7 @@ namespace dynamicgraph {
 	    throw std::runtime_error (oss.str ());
 	  }
 	  Vector force (6);
-	  for (std::size_t i = 1; i < 7; ++i) {
+	  for (unsigned i = 1; i < 7; ++i) {
 	    force (i-1) = components [i];
 	  }
 	  data.push_back (force);

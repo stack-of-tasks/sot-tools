@@ -317,8 +317,8 @@ namespace dynamicgraph {
 	  }
 	  M1.extract (R1_);
 	  M0.extract (R0_);
-	  R0_.transpose (R0t_);
-	  R1_.multiply (R0t_, R1R0t_);
+	  R0t_ = R0_.transpose ();
+	  R1R0t_ = R1_*R0t_;
 	  velocity (3) = (R1R0t_ (2, 1))/dt;
 	  velocity (4) = (R1R0t_ (0, 2))/dt;
 	  velocity (5) = (R1R0t_ (1, 0))/dt;

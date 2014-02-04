@@ -12,8 +12,6 @@
 # include <dynamic-graph/signal-time-dependent.h>
 # include <sot/core/matrix-homogeneous.hh>
 
-# include <jrl/mal/matrixabstractlayer.hh>
-
 namespace dynamicgraph {
   namespace sot {
     namespace tools {

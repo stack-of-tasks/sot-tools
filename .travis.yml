@@ -11,8 +11,8 @@ notifications:
   email:
   - hpp-source@laas.fr
 compiler:
-- clang
 - gcc
+- clang
 script: ./.travis/build
 after_success:
 - coveralls -e _travis/install -e tests

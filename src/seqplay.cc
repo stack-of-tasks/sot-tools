@@ -1,7 +1,7 @@
 //
 // Copyright (C) 2012, 2013 LAAS-CNRS
 //
-// Author: Florent Lamiraux
+// Author: Florent Lamiraux, Mehdi Benallegue
 //
 
 #include <vector>

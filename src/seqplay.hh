@@ -35,8 +35,12 @@ namespace dynamicgraph {
 	Signal <Vector, int> rightAnkleVelSOUT_;
 	Signal <Vector, int> comSOUT_;
 	Signal <Vector, int> comdotSOUT_;
+  Signal <Vector, int> comddotSOUT_;
 	Signal <Vector, int> forceLeftFootSOUT_;
 	Signal <Vector, int> forceRightFootSOUT_;
+
+	Signal <Vector, int> zmpSOUT_;
+
 
 	DYNAMIC_GRAPH_ENTITY_DECL();
 	Seqplay (const std::string& name);
@@ -58,6 +62,8 @@ namespace dynamicgraph {
 	Vector& computeRightAnkleVel (Vector& velocity, const int& t);
 	Vector& computeCom (Vector& com, const int& t);
 	Vector& computeComdot (Vector& comdot, const int& t);
+	Vector& computeComddot (Vector& comdot, const int& t);
+	Vector& computeZMP (Vector& comdot, const int& t);
 	Vector& computeForceFoot (Vector&, const std::vector <Vector>&,
 				  const int&);
 	Vector& computeForceLeftFoot (Vector& force, const int& t);
@@ -75,7 +81,17 @@ namespace dynamicgraph {
 	std::vector <Vector> posture_;
 	std::vector <MatrixHomogeneous> leftAnkle_;
 	std::vector <MatrixHomogeneous> rightAnkle_;
+
+  std::vector <Vector> leftAnkleDot_;
+	std::vector <Vector> rightAnkleDot_;
+
 	std::vector <Vector> com_;
+	std::vector <Vector> comdot_;
+	std::vector <Vector> comddot_;
+	std::vector <Vector> zmp_;
+
+	bool facultativeFound_[7];
+
 	std::vector <Vector> forceLeftFoot_;
 	std::vector <Vector> forceRightFoot_;
 	std::vector <double> time_;

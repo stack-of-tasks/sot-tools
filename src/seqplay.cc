@@ -105,7 +105,9 @@ namespace dynamicgraph
                     makeCommandVoid0 (*this, &Seqplay::start,
                                       docCommandVoid0 ("Start motion")));
         for (size_t i=0; i<7; ++i)
-          facultativeFound_[7]=false;
+        {
+          facultativeFound_[i]=false;
+        }
       }
 
       void Seqplay::load (const std::string& filename)

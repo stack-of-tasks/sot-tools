@@ -15,8 +15,7 @@
 # include <dynamic-graph/factory.h>
 # include <dynamic-graph/linear-algebra.h>
 # include <dynamic-graph/signal.h>
-# include <sot/core/matrix-homogeneous.hh>
-# include <sot/core/matrix-rotation.hh>
+# include <sot/core/matrix-geometry.hh>
 
 namespace dynamicgraph {
   namespace sot {

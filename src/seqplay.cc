@@ -640,10 +640,10 @@ namespace dynamicgraph
           {
             velocity (i) = (M1 (i, 3) - M0 (i, 3)) * dt;
           }
-          M1.extract (R1_);
-          M0.extract (R0_);
-          R0_.transpose (R0t_);
-          R1_.multiply (R0t_, R1R0t_);
+          R1_ = M1.linear();
+          R0_ = M0.linear();
+          R0t_ = R0_.transpose();
+          R1R0t_ = R1_*R0t_;
           velocity (3) = (R1R0t_ (2, 1))*dt;
           velocity (4) = (R1R0t_ (0, 2))*dt;
           velocity (5) = (R1R0t_ (1, 0))*dt;
@@ -914,7 +914,7 @@ namespace dynamicgraph
 
 
 
-            for (unsigned i=0; i < comddot.size (); ++i)
+            for (int i=0; i < comddot.size (); ++i)
             {
               comddot (i) = (qdot_1 (i) - qdot_0 (i)) * dt_0;
             }

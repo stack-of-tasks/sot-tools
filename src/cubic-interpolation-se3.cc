@@ -158,12 +158,12 @@ namespace dynamicgraph {
 	  p1_ (1) = 0.;
 	  p1_ (2) = 0.;
 	  // Goal position
-	  maal::boost::Vector P_T (3);
+	  Vector P_T (3);
 	  P_T (0) = goalSIN_.accessCopy () (0,3);
 	  P_T (1) = goalSIN_.accessCopy () (1,3);
 	  P_T (2) = goalSIN_.accessCopy () (2,3);
 	  // Final velocity
-	  maal::boost::Vector D_T (3); D_T.setZero ();
+	  Vector D_T (3); D_T.setZero ();
 	  p2_ = (D_T + p1_*2)*(-1./T) + (P_T - p0_)*(3./(T*T));
 	  p3_ = (P_T -p0_)*(-2/(T*T*T)) + (p1_ + D_T)*(1./(T*T));
 	  state_ = 1;

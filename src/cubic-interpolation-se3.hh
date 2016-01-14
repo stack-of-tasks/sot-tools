@@ -10,9 +10,7 @@
 # include <dynamic-graph/entity.h>
 # include <dynamic-graph/signal-ptr.h>
 # include <dynamic-graph/signal-time-dependent.h>
-# include <sot/core/matrix-homogeneous.hh>
-
-# include <jrl/mal/matrixabstractlayer.hh>
+# include <sot/core/matrix-geometry.hh>
 
 namespace dynamicgraph {
   namespace sot {

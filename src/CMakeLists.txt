@@ -11,6 +11,7 @@ ADD_LIBRARY (${LIBRARY_NAME} SHARED
   cubic-interpolation-se3.cc
   cubic-interpolation-se3.hh
   oscillator.cc
+  mocap-data-filter.cc
   seqplay.cc
   seqplay.hh
   )

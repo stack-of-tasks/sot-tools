@@ -11,8 +11,6 @@
 
 #include <sot/core/matrix-homogeneous.hh>
 
-#include <iostream>
-
 namespace dynamicgraph {
   namespace sot {
     namespace tools {
@@ -31,6 +29,9 @@ namespace dynamicgraph {
         SignalPtr < ::dynamicgraph::sot::MatrixHomogeneous, int > sinSIN_;
         SignalTimeDependent < ::dynamicgraph::sot::MatrixHomogeneous, int > soutSOUT_;
 
+        double threshold_;
+        ::dynamicgraph::sot::MatrixHomogeneous lastSout_;
+
       }; // class MocapDataFilter
 
       DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN(MocapDataFilter, "MocapDataFilter");
@@ -38,7 +39,8 @@ namespace dynamicgraph {
       MocapDataFilter::MocapDataFilter (const std::string name):
         Entity (name),
         sinSIN_ (0,"MocapDataFilter("+name+")::input(double)::sin"),
-        soutSOUT_ ("MocapDataFilter("+name+")::output(vector)::sout")
+        soutSOUT_ ("MocapDataFilter("+name+")::output(vector)::sout"),
+        threshold_(5.)
       {
         signalRegistration (sinSIN_);
         signalRegistration (soutSOUT_);
@@ -48,14 +50,26 @@ namespace dynamicgraph {
 
         soutSOUT_.addDependency (sinSIN_);
         soutSOUT_.setFunction (boost::bind (&MocapDataFilter::computeSout, this, _1, _2));
+
+        lastSout_.setIdentity();
+
       }
 
       ::dynamicgraph::sot::MatrixHomogeneous& MocapDataFilter::computeSout (::dynamicgraph::sot::MatrixHomogeneous& sout, const int& inTime)
       {
 
         const dynamicgraph::sot::MatrixHomogeneous & sin = sinSIN_.access(inTime);
-        sout = sin;
 
+        if(sin.elementAt(0,3) < threshold_ && sin.elementAt(1,3) < threshold_ && sin.elementAt(2,3) < threshold_)
+        {
+            sout=sin;
+        }
+        else
+        {
+            sout=lastSout_;
+        }
+
+        lastSout_ = sout;
         return sout;
       }
 

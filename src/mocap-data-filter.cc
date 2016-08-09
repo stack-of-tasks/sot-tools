@@ -4,6 +4,9 @@
 // Author: Alexid Mifsud <alexis.mifsud@gmail.com>
 //
 
+#include <dynamic-graph/command-direct-setter.h>
+#include <dynamic-graph/command-direct-getter.h>
+
 #include <dynamic-graph/signal-time-dependent.h>
 #include <dynamic-graph/signal-ptr.h>
 #include <dynamic-graph/factory.h>
@@ -13,6 +16,10 @@
 
 namespace dynamicgraph {
   namespace sot {
+    using command::makeDirectSetter;
+    using command::makeDirectGetter;
+    using command::docDirectSetter;
+    using command::docDirectGetter;
     namespace tools {
 
 
@@ -50,6 +57,15 @@ namespace dynamicgraph {
 
         soutSOUT_.addDependency (sinSIN_);
         soutSOUT_.setFunction (boost::bind (&MocapDataFilter::computeSout, this, _1, _2));
+
+        addCommand ("setThreshold",
+                    makeDirectSetter (*this, &threshold_,
+                                      docDirectSetter ("threshold",
+                                          "double")));
+        addCommand ("getThreshold",
+                    makeDirectGetter (*this, &threshold_,
+                                      docDirectGetter ("threshold",
+                                          "double")));
 
         lastSout_.setIdentity();
 

@@ -47,7 +47,7 @@ namespace dynamicgraph {
         Entity (name),
         sinSIN_ (0,"MocapDataFilter("+name+")::input(double)::sin"),
         soutSOUT_ ("MocapDataFilter("+name+")::output(vector)::sout"),
-        threshold_(5.)
+        threshold_(5000.)
       {
         signalRegistration (sinSIN_);
         signalRegistration (soutSOUT_);
@@ -76,7 +76,12 @@ namespace dynamicgraph {
 
         const dynamicgraph::sot::MatrixHomogeneous & sin = sinSIN_.access(inTime);
 
-        if(sin.elementAt(0,3) < threshold_ && sin.elementAt(1,3) < threshold_ && sin.elementAt(2,3) < threshold_)
+        // Velocity computation
+        Vector vel; vel.resize(3);
+        for (int i=0; i<3; ++i)
+            vel.elementAt(i) = std::abs((sin.elementAt(i,3)-lastSout_.elementAt(i,3))/0.005);
+
+        if(vel.elementAt(0) < threshold_ && vel.elementAt(1) < threshold_ && vel.elementAt(2) < threshold_)
         {
             sout=sin;
         }

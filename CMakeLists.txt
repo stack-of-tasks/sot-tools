@@ -9,6 +9,7 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/python.cmake)
 INCLUDE(cmake/eigen.cmake)
+#INCLUDE(cmake/boost.cmake)
 
 FINDPYTHON ()
 FIND_NUMPY ()
@@ -29,7 +30,15 @@ PKG_CONFIG_APPEND_LIBS("sot-tools")
 # Trigger dependency to dynamic-graph-python
 ADD_REQUIRED_DEPENDENCY("sot-core >= 3.0")
 
+# Search for dependencies.
+# Boost
+#SET(BOOST_COMPONENTS filesystem)
+#SEARCH_FOR_BOOST()
 SEARCH_FOR_EIGEN()
+
+
+
+
 ADD_SUBDIRECTORY(src)
 
 SETUP_PROJECT_FINALIZE()

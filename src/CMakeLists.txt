@@ -13,6 +13,8 @@ ADD_LIBRARY (${LIBRARY_NAME} SHARED
   oscillator.cc
   seqplay.cc
   seqplay.hh
+  simpleseqplay.cc
+  simpleseqplay.hh
   )
 
 PKG_CONFIG_USE_DEPENDENCY (${LIBRARY_NAME} sot-core)

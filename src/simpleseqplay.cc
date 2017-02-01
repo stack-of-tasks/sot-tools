@@ -30,13 +30,15 @@ namespace dynamicgraph
 
       SimpleSeqPlay::SimpleSeqPlay (const std::string& name) :
         Entity (name),
+	firstSINTERN( NULL,
+                     sotNOSIGNAL,"SimpleSeqPlay("+name+")::intern(dummy)::init" ),
         postureSOUT_(boost::bind (&SimpleSeqPlay::computePosture,this, _1, _2),
-		    sotNOSIGNAL,
+		    firstSINTERN,
 		    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
         state_ (0), startTime_ (0), posture_ ()
       {
+	firstSINTERN.setConstant(0);
         signalRegistration (postureSOUT_ );
-
         std::string docstring =
           "Load files describing a whole-body motion as reference feature "
           "trajectories\n"
@@ -114,7 +116,7 @@ namespace dynamicgraph
               throw std::runtime_error (oss.str ());
             }
           }
-          Vector config (static_cast<unsigned> (components.size () - 1));
+	  dg::Vector config (static_cast<unsigned> (components.size () - 1));
           for (unsigned i = 1; i < components.size (); ++i)
           {
             config (i - 1) = components[i];
@@ -136,7 +138,7 @@ namespace dynamicgraph
         }
       }
 
-      Vector& SimpleSeqPlay::computePosture (Vector& pos, const int& t)
+      dg::Vector& SimpleSeqPlay::computePosture (dg::Vector& pos, int t)
       {
         if (posture_.size () == 0)
         {

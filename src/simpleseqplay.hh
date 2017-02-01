@@ -26,6 +26,8 @@ namespace dynamicgraph {
 
       class SimpleSeqPlay : public dg::Entity
       {
+	typedef int Dummy;
+	dg::SignalTimeDependent<Dummy,int> firstSINTERN;
 	dg::SignalTimeDependent<dg::Vector,int> postureSOUT_;
 
 	DYNAMIC_GRAPH_ENTITY_DECL();
@@ -36,13 +38,13 @@ namespace dynamicgraph {
 	virtual std::string getDocString () const;
 
       private:
-	Vector& computePosture (Vector& pos, const int& t);
+	dg::Vector& computePosture (dg::Vector& pos, int t);
 	// 0: motion not started, 1: motion in progress, 2: motion finished
 	unsigned int state_;
 	unsigned int configId_;
 	int startTime_;
 
-	std::vector <Vector> posture_;
+	std::vector <dg::Vector> posture_;
 
 	bool facultativeFound_[7];
 

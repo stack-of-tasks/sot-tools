@@ -30,13 +30,12 @@ namespace dynamicgraph
 
       SimpleSeqPlay::SimpleSeqPlay (const std::string& name) :
         Entity (name),
-        postureSOUT_ ("SimpleSeqPlay(" + name + ")::output(vector)::posture"),
+        postureSOUT_(boost::bind (&SimpleSeqPlay::computePosture,this, _1, _2),
+		    sotNOSIGNAL,
+		    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
         state_ (0), startTime_ (0), posture_ ()
       {
         signalRegistration (postureSOUT_ );
-        postureSOUT_.setFunction (boost::bind (&SimpleSeqPlay::computePosture,
-                                               this, _1, _2));
-cd
 
         std::string docstring =
           "Load files describing a whole-body motion as reference feature "
@@ -74,9 +73,7 @@ cd
         std::ifstream file;
         unsigned int lineNumber = 0;
         int postureSize = -2;
-
         fn= filename + ".posture";
-
         // Open file
 	file.open (fn.c_str ());
 	if (!file.is_open ())
@@ -85,7 +82,6 @@ cd
                                       fn);
           }
 
-
         posture_.clear ();
 
         // Read posture
@@ -93,7 +89,7 @@ cd
         {
           std::getline (file, line);
           ++lineNumber;
-          tokenizer_t tok (line, escaped_list_separator<char>('\\', '\t', '\"'));
+          tokenizer_t tok (line, escaped_list_separator<char>('\\', ' ', '\"' ));
           std::vector <double> components;
           for(tokenizer_t::iterator it=tok.begin(); it!=tok.end(); ++it)
           {
@@ -183,7 +179,7 @@ cd
           "  Warning: pluging signals before loading trajectories will fail.\n";
       }
 
-      DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN (SimpleSeqPlay, "SimpleSeqplay");
+      DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN (SimpleSeqPlay, "SimpleSeqPlay");
     } // namespace tools
   } //namespace sot
 } // namespace dynamicgraph

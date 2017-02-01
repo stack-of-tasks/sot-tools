@@ -8,8 +8,8 @@ SET (LIBRARY_NAME ${PROJECT_NAME})
 ADD_LIBRARY (${LIBRARY_NAME} SHARED
   cubic-interpolation.cc
   cubic-interpolation.hh
-  kinematic-planner.cc
-  kinematic-planner.hh
+  #kinematic-planner.cc
+  #kinematic-planner.hh
   cubic-interpolation-se3.cc
   cubic-interpolation-se3.hh
   oscillator.cc

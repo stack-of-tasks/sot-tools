@@ -16,24 +16,20 @@
 # include <dynamic-graph/entity.h>
 # include <dynamic-graph/factory.h>
 # include <dynamic-graph/linear-algebra.h>
-# include <dynamic-graph/signal.h>
-# include <sot/core/matrix-homogeneous.hh>
-# include <sot/core/matrix-rotation.hh>
+# include <dynamic-graph/signal-time-dependent.h>
+# include <sot/core/matrix-geometry.hh>
 
 namespace dynamicgraph {
   namespace sot {
     namespace tools {
-      using dynamicgraph::Entity;
-      using dynamicgraph::Vector;
-      using dynamicgraph::Signal;
-      using dynamicgraph::sot::MatrixHomogeneous;
+      namespace dg = dynamicgraph;
 
-      class Seqplay : public Entity
+      class SimpleSeqPlay : public dg::Entity
       {
-	Signal <Vector, int> postureSOUT_;
+	dg::SignalTimeDependent<dg::Vector,int> postureSOUT_;
 
 	DYNAMIC_GRAPH_ENTITY_DECL();
-	Seqplay (const std::string& name);
+	SimpleSeqPlay (const std::string& name);
 
 	void load (const std::string& filename);
 	void start ();
@@ -52,7 +48,7 @@ namespace dynamicgraph {
 
 	std::vector <double> time_;
 
-      }; // class Seqplay
+      }; // class SimpleSeqPlay
     } // namespace tools
   } //namespace sot
 } // namespace dynamicgraph

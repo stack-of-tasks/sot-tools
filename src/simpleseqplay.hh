@@ -16,43 +16,41 @@
 # include <dynamic-graph/entity.h>
 # include <dynamic-graph/factory.h>
 # include <dynamic-graph/linear-algebra.h>
-# include <dynamic-graph/signal.h>
-# include <sot/core/matrix-homogeneous.hh>
-# include <sot/core/matrix-rotation.hh>
+# include <dynamic-graph/signal-time-dependent.h>
+# include <sot/core/matrix-geometry.hh>
 
 namespace dynamicgraph {
   namespace sot {
     namespace tools {
-      using dynamicgraph::Entity;
-      using dynamicgraph::Vector;
-      using dynamicgraph::Signal;
-      using dynamicgraph::sot::MatrixHomogeneous;
+      namespace dg = dynamicgraph;
 
-      class Seqplay : public Entity
+      class SimpleSeqPlay : public dg::Entity
       {
-	Signal <Vector, int> postureSOUT_;
+	typedef int Dummy;
+	dg::SignalTimeDependent<Dummy,int> firstSINTERN;
+	dg::SignalTimeDependent<dg::Vector,int> postureSOUT_;
 
 	DYNAMIC_GRAPH_ENTITY_DECL();
-	Seqplay (const std::string& name);
+	SimpleSeqPlay (const std::string& name);
 
 	void load (const std::string& filename);
 	void start ();
 	virtual std::string getDocString () const;
 
       private:
-	Vector& computePosture (Vector& pos, const int& t);
+	dg::Vector& computePosture (dg::Vector& pos, int t);
 	// 0: motion not started, 1: motion in progress, 2: motion finished
 	unsigned int state_;
 	unsigned int configId_;
 	int startTime_;
 
-	std::vector <Vector> posture_;
+	std::vector <dg::Vector> posture_;
 
 	bool facultativeFound_[7];
 
 	std::vector <double> time_;
 
-      }; // class Seqplay
+      }; // class SimpleSeqPlay
     } // namespace tools
   } //namespace sot
 } // namespace dynamicgraph

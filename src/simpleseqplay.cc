@@ -30,14 +30,15 @@ namespace dynamicgraph
 
       SimpleSeqPlay::SimpleSeqPlay (const std::string& name) :
         Entity (name),
-        postureSOUT_ ("SimpleSeqPlay(" + name + ")::output(vector)::posture"),
+	firstSINTERN( NULL,
+                     sotNOSIGNAL,"SimpleSeqPlay("+name+")::intern(dummy)::init" ),
+        postureSOUT_(boost::bind (&SimpleSeqPlay::computePosture,this, _1, _2),
+		    firstSINTERN,
+		    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
         state_ (0), startTime_ (0), posture_ ()
       {
+	firstSINTERN.setConstant(0);
         signalRegistration (postureSOUT_ );
-        postureSOUT_.setFunction (boost::bind (&SimpleSeqPlay::computePosture,
-                                               this, _1, _2));
-cd
-
         std::string docstring =
           "Load files describing a whole-body motion as reference feature "
           "trajectories\n"
@@ -74,9 +75,7 @@ cd
         std::ifstream file;
         unsigned int lineNumber = 0;
         int postureSize = -2;
-
         fn= filename + ".posture";
-
         // Open file
 	file.open (fn.c_str ());
 	if (!file.is_open ())
@@ -85,7 +84,6 @@ cd
                                       fn);
           }
 
-
         posture_.clear ();
 
         // Read posture
@@ -93,7 +91,7 @@ cd
         {
           std::getline (file, line);
           ++lineNumber;
-          tokenizer_t tok (line, escaped_list_separator<char>('\\', '\t', '\"'));
+          tokenizer_t tok (line, escaped_list_separator<char>('\\', ' ', '\"' ));
           std::vector <double> components;
           for(tokenizer_t::iterator it=tok.begin(); it!=tok.end(); ++it)
           {
@@ -118,7 +116,7 @@ cd
               throw std::runtime_error (oss.str ());
             }
           }
-          Vector config (static_cast<unsigned> (components.size () - 1));
+	  dg::Vector config (static_cast<unsigned> (components.size () - 1));
           for (unsigned i = 1; i < components.size (); ++i)
           {
             config (i - 1) = components[i];
@@ -140,7 +138,7 @@ cd
         }
       }
 
-      Vector& SimpleSeqPlay::computePosture (Vector& pos, const int& t)
+      dg::Vector& SimpleSeqPlay::computePosture (dg::Vector& pos, int t)
       {
         if (posture_.size () == 0)
         {
@@ -183,7 +181,7 @@ cd
           "  Warning: pluging signals before loading trajectories will fail.\n";
       }
 
-      DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN (SimpleSeqPlay, "SimpleSeqplay");
+      DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN (SimpleSeqPlay, "SimpleSeqPlay");
     } // namespace tools
   } //namespace sot
 } // namespace dynamicgraph

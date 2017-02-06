@@ -16,6 +16,7 @@
 # include <dynamic-graph/entity.h>
 # include <dynamic-graph/factory.h>
 # include <dynamic-graph/linear-algebra.h>
+#include <dynamic-graph/signal-ptr.h>
 # include <dynamic-graph/signal-time-dependent.h>
 # include <sot/core/matrix-geometry.hh>
 
@@ -29,7 +30,9 @@ namespace dynamicgraph {
 	typedef int Dummy;
 	dg::SignalTimeDependent<Dummy,int> firstSINTERN;
 	dg::SignalTimeDependent<dg::Vector,int> postureSOUT_;
-
+	
+	dg::SignalPtr <dg::Vector,int> currentPostureSIN_;
+	
 	DYNAMIC_GRAPH_ENTITY_DECL();
 	SimpleSeqPlay (const std::string& name);
 
@@ -39,16 +42,19 @@ namespace dynamicgraph {
 
       private:
 	dg::Vector& computePosture (dg::Vector& pos, int t);
-	// 0: motion not started, 1: motion in progress, 2: motion finished
+	// 0: motion not started, 1: going to the current position to the first position.
+	// 2: motion in progress, 3: motion finished
 	unsigned int state_;
 	unsigned int configId_;
 	int startTime_;
 
 	std::vector <dg::Vector> posture_;
-
+	dg::Vector currentPosture_;
 	bool facultativeFound_[7];
 
 	std::vector <double> time_;
+	double dt_;
+	double time_to_start_;
 
       }; // class SimpleSeqPlay
     } // namespace tools

@@ -2,7 +2,7 @@
 // Copyright (C) 2012, 2013, 2017 LAAS-CNRS
 //
 // From Author: Florent Lamiraux, Mehdi Benallegue, 
-// Author: Olivier Stasse
+// Author: Olivier Stasse, Rohan Budhiraja
 // Simple sequence player just playing back a set of poses.
 //
 
@@ -33,12 +33,16 @@ namespace dynamicgraph
 	firstSINTERN( NULL,
                      sotNOSIGNAL,"SimpleSeqPlay("+name+")::intern(dummy)::init" ),
         postureSOUT_(boost::bind (&SimpleSeqPlay::computePosture,this, _1, _2),
-		    firstSINTERN,
+		    currentPostureSIN_,
 		    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
-        state_ (0), startTime_ (0), posture_ ()
+	currentPostureSIN_(NULL,"SimpleSeqPlay("+name+")::input(vector)::currentPosture"),
+        state_ (0), startTime_ (0), posture_ (),
+	time_(0),dt_(0.001),time_to_start_(3.0)
       {
 	firstSINTERN.setConstant(0);
         signalRegistration (postureSOUT_ );
+	signalRegistration (currentPostureSIN_);
+
         std::string docstring =
           "Load files describing a whole-body motion as reference feature "
           "trajectories\n"
@@ -146,22 +150,48 @@ namespace dynamicgraph
           ("SimpleSeqPlay posture: Signals not initialized. read files first.");
         }
         std::size_t configId;
+	// If we are still waiting to start
         if (state_ == 0)
-        {
-          configId = 0;
-        }
-        else if (state_ == 1)
-        {
-          configId = t - startTime_;
-          if (configId == posture_.size () - 1)
-          {
-            state_ = 2;
-          }
-        }
+	  {
+	    // return the current posture.
+	    pos = currentPostureSIN_.access(t);
+	    return pos;
+	  }
+	// Going to the first position
+	else if (state_ == 1)
+	  {
+	    // Compute the difference between current posture and desired one.
+	    dg::Vector deltapos = posture_[0]-currentPostureSIN_.access(t);
+
+	    // If sufficiently closed to the first posture of the seqplay.
+	    if (deltapos.norm()<1e-4)
+	      {
+		// Switch to the next state.
+		state_=2;
+		startTime_ = postureSOUT_.getTime();
+		pos = posture_ [0];
+	      }
+	    else
+	      {
+		// Tries to go closer to the first posture.
+		deltapos = (deltapos * dt_)/time_to_start_; 
+		pos = currentPostureSIN_.access(t) + deltapos;
+	      }
+	    return pos;
+	  }
+	// Tries to go through the list of postures.
+        else if (state_ == 2)
+	  {
+	    configId = t - startTime_;
+	    if (configId == posture_.size () - 1)
+	      {
+		state_ = 3;
+	      }
+	  }
         else
-        {
-          configId = posture_.size () -1;
-        }
+	  {
+	    configId = posture_.size () -1;
+	  }
         pos = posture_ [configId];
         return pos;
       }

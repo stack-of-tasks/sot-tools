@@ -50,11 +50,12 @@ namespace dynamicgraph {
 
 	std::vector <dg::Vector> posture_;
 	dg::Vector currentPosture_;
-	bool facultativeFound_[7];
 
 	std::vector <double> time_;
 	double dt_;
 	double time_to_start_;
+	// Number of iterations performed in state1.
+	int it_nbs_in_state1_;
 
       }; // class SimpleSeqPlay
     } // namespace tools

@@ -13,6 +13,9 @@
 #include <iostream>
 
 #include <dynamic-graph/command-bind.h>
+#include <dynamic-graph/command-setter.h>
+#include <dynamic-graph/command-direct-setter.h>
+#include <dynamic-graph/command-direct-getter.h>
 
 #include "simpleseqplay.hh"
 
@@ -20,6 +23,11 @@ namespace dynamicgraph
 {
   namespace sot
   {
+    using command::makeDirectSetter;
+    using command::docDirectSetter;
+    using command::docDirectGetter;
+    using command::makeDirectGetter;
+
     namespace tools
     {
       using dynamicgraph::Entity;
@@ -37,7 +45,8 @@ namespace dynamicgraph
 		    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
 	currentPostureSIN_(NULL,"SimpleSeqPlay("+name+")::input(vector)::currentPosture"),
         state_ (0), startTime_ (0), posture_ (),
-	time_(0),dt_(0.001),time_to_start_(3.0)
+	time_(0),dt_(0.001),time_to_start_(3.0),
+	it_nbs_in_state1_(0)
       {
 	firstSINTERN.setConstant(0);
         signalRegistration (postureSOUT_ );
@@ -63,10 +72,14 @@ namespace dynamicgraph
         addCommand ("start",
                     makeCommandVoid0 (*this, &SimpleSeqPlay::start,
                                       docCommandVoid0 ("Start motion")));
-        for (size_t i=0; i<7; ++i)
-        {
-          facultativeFound_[i]=false;
-        }
+
+        docstring =
+          "Set the time between the robot current pose and the starting of the buffer \n";
+
+	addCommand ("setTimeToStart",
+                    makeDirectSetter(*this, &time_to_start_,
+				     docDirectSetter("Time to start of the buffer","double")));
+
       }
 
       void SimpleSeqPlay::load (const std::string& filename)
@@ -142,6 +155,7 @@ namespace dynamicgraph
         }
       }
 
+
       dg::Vector& SimpleSeqPlay::computePosture (dg::Vector& pos, int t)
       {
         if (posture_.size () == 0)
@@ -164,7 +178,8 @@ namespace dynamicgraph
 	    dg::Vector deltapos = posture_[0]-currentPostureSIN_.access(t);
 
 	    // If sufficiently closed to the first posture of the seqplay.
-	    if (deltapos.norm()<1e-4)
+	    if ((deltapos.norm()<1e-4) ||
+		(((dt_+1)*it_nbs_in_state1_)>time_to_start_))
 	      {
 		// Switch to the next state.
 		state_=2;
@@ -174,8 +189,10 @@ namespace dynamicgraph
 	    else
 	      {
 		// Tries to go closer to the first posture.
-		deltapos = (deltapos * dt_)/time_to_start_; 
+		deltapos = (deltapos * dt_)/
+		  (time_to_start_-dt_*it_nbs_in_state1_); 
 		pos = currentPostureSIN_.access(t) + deltapos;
+		it_nbs_in_state1_++;
 	      }
 	    return pos;
 	  }

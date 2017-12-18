@@ -1,0 +1,8 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$a00001.html" title="dynamicgraph::sot::\ltools::CubicInterpolation" alt="" coords="122,5,285,47"/>
+<area shape="rect" id="node3" href="$a00002.html" title="dynamicgraph::sot::\ltools::CubicInterpolationSE3" alt="" coords="109,71,297,112"/>
+<area shape="rect" id="node4" href="$a00003.html" title="dynamicgraph::sot::\ltools::KinematicPlanner" alt="" coords="123,136,283,177"/>
+<area shape="rect" id="node5" href="$a00004.html" title="dynamicgraph::sot::\ltools::Oscillator" alt="" coords="135,201,272,243"/>
+<area shape="rect" id="node6" href="$a00005.html" title="dynamicgraph::sot::\ltools::Playback" alt="" coords="135,267,272,308"/>
+<area shape="rect" id="node7" href="$a00006.html" title="dynamicgraph::sot::\ltools::Seqplay" alt="" coords="135,332,272,373"/>
+</map>

@@ -1,8 +1,9 @@
 sot-tools
 =========
 
-[![Build Status](https://travis-ci.org/stack-of-tasks/sot-tools.png?branch=master)](https://travis-ci.org/stack-of-tasks/sot-tools)
-[![Coverage Status](https://coveralls.io/repos/stack-of-tasks/sot-tools/badge.png)](https://coveralls.io/r/stack-of-tasks/sot-tools)
+[![Building Status](https://travis-ci.org/stack-of-tasks/sot-tools.svg?branch=master)](https://travis-ci.org/stack-of-tasks/sot-tools)
+[![Pipeline status](https://gepgitlab.laas.fr/stack-of-tasks/sot-tools/badges/master/pipeline.svg)](https://gepgitlab.laas.fr/stack-of-tasks/sot-tools/commits/master)
+[![Coverage report](https://gepgitlab.laas.fr/stack-of-tasks/sot-tools/badges/master/coverage.svg?job=doc-coverage)](http://projects.laas.fr/gepetto/doc/stack-of-tasks/sot-tools/master/coverage/)
 
 Additional entities and scripts for the stack of tasks framework.
 

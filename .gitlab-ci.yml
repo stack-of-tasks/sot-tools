@@ -23,6 +23,7 @@ cache:
 robotpkg-py-sot-tools-v3-14.04-release:
   <<: *robotpkg-py-sot-tools-v3
   image: eur0c.laas.fr:5000/stack-of-tasks/sot-tools/py-sot-tools-v3:14.04
+  allow_failure: true
 
 robotpkg-py-sot-tools-v3-16.04-release:
   <<: *robotpkg-py-sot-tools-v3

@@ -22,6 +22,8 @@ SET(CUSTOM_HEADER_DIR sot/tools)
 SET(${PROJECT_NAME}_HEADERS
 )
 
+SET(DOXYGEN_USE_MATHJAX YES)
+
 SETUP_PROJECT()
 
 # Add dependency to libsot-tools.so library in pkg-config file.

@@ -18,7 +18,6 @@ cache:
     - make checkout MASTER_REPOSITORY="dir ${CI_PROJECT_DIR}"
     - make install
     - cd work.$(hostname)/$(make show-var VARNAME=DISTNAME)
-    - make test
 
 robotpkg-py-sot-tools-v3-14.04-release:
   <<: *robotpkg-py-sot-tools-v3
@@ -43,9 +42,6 @@ doc-coverage:
     - cd work.$(hostname)/$(make show-var VARNAME=DISTNAME)
     - make doc
     - mv doc/doxygen-html ${CI_PROJECT_DIR}
-    - mkdir -p ${CI_PROJECT_DIR}/coverage/
-    - gcovr -r .
-    - gcovr -r . --html --html-details -o ${CI_PROJECT_DIR}/coverage/index.html
   artifacts:
     expire_in: 1 day
     paths:

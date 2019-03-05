@@ -6,14 +6,14 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 INCLUDE(cmake/base.cmake)
-INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/python.cmake)
 INCLUDE(cmake/eigen.cmake)
 
 
+SET(PROJECT_NAMESPACE stack-of-tasks)
 SET(PROJECT_NAME sot-tools)
 SET(PROJECT_DESCRIPTION "Miscellanous entities for the stack of tasks")
-SET(PROJECT_URL "http://github.com/laas/sot-tools")
+SET(PROJECT_URL "http://github.com/${PROJECT_NAMESPACE}/${PROJECT_NAME}")
 
 SET(CUSTOM_HEADER_DIR sot/tools)
 SET(${PROJECT_NAME}_HEADERS
@@ -45,4 +45,3 @@ ENDIF(BUILD_PYTHON_INTERFACE)
 ADD_SUBDIRECTORY(src)
 
 SETUP_PROJECT_FINALIZE()
-SETUP_PROJECT_CPACK()

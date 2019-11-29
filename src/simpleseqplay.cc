@@ -1,7 +1,7 @@
 //
 // Copyright (C) 2012, 2013, 2017 LAAS-CNRS
 //
-// From Author: Florent Lamiraux, Mehdi Benallegue, 
+// From Author: Florent Lamiraux, Mehdi Benallegue,
 // Author: Olivier Stasse, Rohan Budhiraja
 // Simple sequence player just playing back a set of poses.
 //
@@ -44,7 +44,8 @@ namespace dynamicgraph
 		    currentPostureSIN_,
 		    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
 	currentPostureSIN_(NULL,"SimpleSeqPlay("+name+")::input(vector)::currentPosture"),
-        state_ (0), startTime_ (0), posture_ (),
+        state_ (0), configId_prev_(0),
+	startTime_ (0), posture_ (),
 	time_(0),dt_(0.001),time_to_start_(3.0),
 	it_nbs_in_state1_(0)
       {
@@ -72,6 +73,14 @@ namespace dynamicgraph
         addCommand ("start",
                     makeCommandVoid0 (*this, &SimpleSeqPlay::start,
                                       docCommandVoid0 ("Start motion")));
+
+        addCommand ("hold",
+                    makeCommandVoid0 (*this, &SimpleSeqPlay::hold,
+                                      docCommandVoid0 ("Hold motion")));
+
+        addCommand ("unhold",
+                    makeCommandVoid0 (*this, &SimpleSeqPlay::unhold,
+                                      docCommandVoid0 ("Restart motion")));
 
         docstring =
           "Set the time between the robot current pose and the starting of the buffer \n";
@@ -190,7 +199,7 @@ namespace dynamicgraph
 	      {
 		// Tries to go closer to the first posture.
 		deltapos = (deltapos * dt_)/
-		  (time_to_start_-dt_*it_nbs_in_state1_); 
+		  (time_to_start_-dt_*it_nbs_in_state1_);
 		pos = currentPostureSIN_.access(t) + deltapos;
 		it_nbs_in_state1_++;
 	      }
@@ -200,6 +209,9 @@ namespace dynamicgraph
         else if (state_ == 2)
 	  {
 	    configId = t - startTime_;
+	    if (hold_==true)
+	      configId_hold_ = configId;
+
 	    if (configId == posture_.size () - 1)
 	      {
 		state_ = 3;
@@ -210,7 +222,19 @@ namespace dynamicgraph
 	    configId = posture_.size () -1;
 	  }
         pos = posture_ [configId];
+	configId_prev_ = configId;
         return pos;
+      }
+
+      void SimpleSeqPlay::hold()
+      {
+	hold_ = true;
+	configId_hold_ = configId_prev_;
+      }
+
+      void SimpleSeqPlay::unhold()
+      {
+	hold_ = false;
       }
 
       std::string SimpleSeqPlay::getDocString () const
@@ -232,4 +256,3 @@ namespace dynamicgraph
     } // namespace tools
   } //namespace sot
 } // namespace dynamicgraph
-

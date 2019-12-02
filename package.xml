@@ -14,9 +14,11 @@
   <author>Jorrit T'Hooft</author>
   
   <build_depend>roscpp</build_depend>
-
+  <build_depend>sot-core</build_depend>
+  
   <exec_depend>roscpp</exec_depend>
-
+  <exec_depend>sot-core</exec_depend>
+  
   <buildtool_depend>catkin</buildtool_depend>
 
   <doc_depend>doxygen</doc_depend>

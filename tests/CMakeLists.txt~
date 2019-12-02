@@ -1,0 +1,7 @@
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
+
+
+ADD_EXECUTABLE(test_simpleseqplay test_simpleseqplay.cc)
+PKG_CONFIG_USE_DEPENDENCY(test_simpleseqplay sot-core)
+ADD_TEST(test_simpleseqplay test_simpleseqplay)

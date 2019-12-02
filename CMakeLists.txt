@@ -47,7 +47,6 @@ SEARCH_FOR_PTHREAD()
 SET(${PROJECT_NAME}_HEADERS
   src/cubic-interpolation.hh
   src/kinematic-planner.hh
-  src/playback.hh
   src/seqplay.hh
   src/simpleseqplay.hh)
 

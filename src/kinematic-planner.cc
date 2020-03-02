@@ -4,7 +4,7 @@
 // Author: Rohan Budhiraja
 //
 
-#include "kinematic-planner.hh"
+#include "sot/tools/kinematic-planner.hh"
 #include <dynamic-graph/command-bind.h>
 #include <fstream>
 #include <sstream>

@@ -9,7 +9,7 @@
 #include <dynamic-graph/command-setter.h>
 #include <dynamic-graph/factory.h>
 
-#include "cubic-interpolation-se3.hh"
+#include "sot/tools/cubic-interpolation-se3.hh"
 
 namespace dynamicgraph {
 namespace sot {

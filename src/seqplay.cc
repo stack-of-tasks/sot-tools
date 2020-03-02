@@ -12,7 +12,7 @@
 
 #include <dynamic-graph/command-bind.h>
 
-#include "seqplay.hh"
+#include "sot/tools/seqplay.hh"
 
 namespace dynamicgraph {
 namespace sot {

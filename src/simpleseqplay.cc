@@ -17,7 +17,7 @@
 #include <dynamic-graph/command-direct-setter.h>
 #include <dynamic-graph/command-direct-getter.h>
 
-#include "simpleseqplay.hh"
+#include "sot/tools/simpleseqplay.hh"
 
 namespace dynamicgraph {
 namespace sot {

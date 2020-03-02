@@ -10,6 +10,10 @@ SET(PROJECT_NAME sot-tools)
 SET(PROJECT_DESCRIPTION "Miscellanous entities for the stack of tasks")
 SET(PROJECT_URL "http://github.com/${PROJECT_NAMESPACE}/${PROJECT_NAME}")
 
+OPTION(BUILD_PYTHON_INTERFACE "Build the python bindings" ON)
+OPTION(INSTALL_PYTHON_INTERFACE_ONLY "Install *ONLY* the python binding" OFF)
+OPTION(SUFFIX_SO_VERSION "Suffix shared library name by a string depending on git status of project" ON)
+
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/python.cmake)
 INCLUDE(cmake/eigen.cmake)
@@ -17,12 +21,9 @@ INCLUDE(cmake/eigen.cmake)
 SET(CUSTOM_HEADER_DIR sot/tools)
 SET(${PROJECT_NAME}_HEADERS)
 SET(DOXYGEN_USE_MATHJAX YES)
-
-OPTION(BUILD_PYTHON_INTERFACE "Build the python bindings" ON)
-OPTION(INSTALL_PYTHON_INTERFACE_ONLY "Install *ONLY* the python binding" OFF)
-OPTION(SUFFIX_SO_VERSION
-  "Suffix shared library name by a string depending on git status of project"
-  ON)
+IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
+  SET(PROJECT_USE_CMAKE_EXPORT TRUE)
+ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
 
 COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
 PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})

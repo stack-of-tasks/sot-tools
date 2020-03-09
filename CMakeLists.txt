@@ -1,8 +1,18 @@
-# Copyright 2012, CNRS
-# Author: Florent Lamiraux
+
+# Copyright 2012, 2020 CNRS
+# Author: Florent Lamiraux, Guilhem Saurel
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+
+SET(PROJECT_NAMESPACE stack-of-tasks)
+SET(PROJECT_NAME sot-tools)
+SET(PROJECT_DESCRIPTION "Miscellanous entities for the stack of tasks")
+SET(PROJECT_URL "http://github.com/${PROJECT_NAMESPACE}/${PROJECT_NAME}")
+
+OPTION(BUILD_PYTHON_INTERFACE "Build the python bindings" ON)
+OPTION(INSTALL_PYTHON_INTERFACE_ONLY "Install *ONLY* the python binding" OFF)
+OPTION(SUFFIX_SO_VERSION "Suffix shared library name by a string depending on git status of project" ON)
 
 SET(PROJECT_ORG stack-of-tasks)
 SET(PROJECT_NAME sot-tools)
@@ -16,54 +26,27 @@ SET(PROJECT_USE_CMAKE_EXPORT TRUE)
 SET(CXX_DISABLE_WERROR True)
 
 INCLUDE(cmake/base.cmake)
-
-# Specify the project.
-cmake_policy(SET CMP0048 NEW)
-PROJECT(${PROJECT_NAME}
-  LANGUAGES
-  CXX
-  VERSION
-  ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}
-  )
-
-INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/python.cmake)
-INCLUDE(cmake/header.cmake)
-INCLUDE(cmake/pthread.cmake)
+INCLUDE(cmake/eigen.cmake)
 
-add_project_dependency (Boost REQUIRED
-  python filesystem system thread program_options unit_test_framework)
+SET(DOXYGEN_USE_MATHJAX YES)
+IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
+  SET(PROJECT_USE_CMAKE_EXPORT TRUE)
+ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
 
-#find_package (Eigen3 REQUIRED NO_MODULE)
+COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
+PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})
 
-#FINDPYTHON ()
-#FIND_NUMPY ()
-PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
-
-# Search for Boost.
-SEARCH_FOR_PTHREAD()
-
-
-SET(${PROJECT_NAME}_HEADERS
-  src/cubic-interpolation.hh
-  src/kinematic-planner.hh
-  src/seqplay.hh
-  src/simpleseqplay.hh)
-
-
-INSTALL(FILES ${${PROJECT_NAME}_HEADERS}
-  DESTINATION include/sot/tools
-  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
-  )
-
-# Add dependency to libsot-tools.so library in pkg-config file.
-PKG_CONFIG_APPEND_LIBS("sot-tools")
 
 # Trigger dependency to dynamic-graph-python
-ADD_PROJECT_DEPENDENCY(sot-core REQUIRED)
+ADD_PROJECT_DEPENDENCY(sot-core 4.8.1 REQUIRED PKG_CONFIG_REQUIRES "sot-core >= 4.8.1")
 
+IF(BUILD_PYTHON_INTERFACE)
+  FINDPYTHON ()
+  FIND_NUMPY ()
+  INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+  ADD_PROJECT_DEPENDENCY(dynamic-graph-python REQUIRED PKG_CONFIG_REQUIRES "dynamic-graph-python")
+ENDIF(BUILD_PYTHON_INTERFACE)
+
+ADD_SUBDIRECTORY(include/sot/tools)
 ADD_SUBDIRECTORY(src)
-#ADD_SUBDIRECTORY(doc)
-ADD_SUBDIRECTORY(tests)
-
-SETUP_PROJECT_PACKAGE_FINALIZE()

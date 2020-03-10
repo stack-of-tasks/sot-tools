@@ -1,42 +1,22 @@
 
-# Copyright 2012, CNRS
+# Copyright 2012, 2020, CNRS
 # Author: Florent Lamiraux
+# Author: Guilhem Saurel
 #
 
-SET(LIBRARY_NAME ${PROJECT_NAME})
-
-ADD_LIBRARY(${LIBRARY_NAME} SHARED
-  cubic-interpolation.cc
-  #kinematic-planner.cc
-  cubic-interpolation-se3.cc
-  oscillator.cc
-  seqplay.cc
-  simpleseqplay.cc
-  )
-
-TARGET_LINK_LIBRARIES (${LIBRARY_NAME} sot-core::sot-core)
-DYNAMIC_GRAPH_PYTHON_MODULE ("sot/tools" ${LIBRARY_NAME} wrap)
-
-SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES
-  INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-
-INSTALL (TARGETS ${LIBRARY_NAME}
-  EXPORT ${TARGETS_EXPORT_NAME}
-  DESTINATION ${CMAKE_INSTALL_LIBDIR})
-IF(SUFFIX_SO_VERSION)
-  SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES
-    SOVERSION ${PROJECT_VERSION})
-ENDIF()
-
-IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
-  INSTALL(TARGETS ${LIBRARY_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION lib)
-ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
-
 IF(BUILD_PYTHON_INTERFACE)
-  DYNAMIC_GRAPH_PYTHON_MODULE("sot/tools" ${LIBRARY_NAME} wrap)
-  INSTALL(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/se3.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/tools/quaternion.py
-    DESTINATION ${PYTHON_SITELIB}/dynamic_graph/sot/tools
+  SET(NO_INSTALL_OF_INIT_PY 0)
+  DYNAMIC_GRAPH_PYTHON_MODULE("sot/tools" ${PROJECT_NAME} wrap
+    ${NO_INSTALL_OF_INIT_PY})
+
+  SET(${PROJECT_NAME}_PYTHON
+    __init__.py
+    se3.py
+    quaternion.py
     )
+
+  FOREACH(py_file ${${PY_NAME}_PYTHON})
+    PYTHON_INSTALL_ON_SITE("dynamic_graph/sot/toolss" ${py_file})
+  ENDFOREACH(py_file ${${PY_NAME}_PYTHON})
+
 ENDIF(BUILD_PYTHON_INTERFACE)

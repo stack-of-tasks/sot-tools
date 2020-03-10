@@ -5,48 +5,81 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
-SET(PROJECT_NAMESPACE stack-of-tasks)
-SET(PROJECT_NAME sot-tools)
-SET(PROJECT_DESCRIPTION "Miscellanous entities for the stack of tasks")
-SET(PROJECT_URL "http://github.com/${PROJECT_NAMESPACE}/${PROJECT_NAME}")
-
-OPTION(BUILD_PYTHON_INTERFACE "Build the python bindings" ON)
-OPTION(INSTALL_PYTHON_INTERFACE_ONLY "Install *ONLY* the python binding" OFF)
-OPTION(SUFFIX_SO_VERSION "Suffix shared library name by a string depending on git status of project" ON)
-
+# Project properties
 SET(PROJECT_ORG stack-of-tasks)
 SET(PROJECT_NAME sot-tools)
 SET(PROJECT_DESCRIPTION "Miscellanous entities for the stack of tasks")
-SET(PROJECT_URL "http://github.com/stack-of-tasks/sot-tools")
+SET(PROJECT_URL "https://github.com/${PROJECT_ORG}/${PROJECT_NAME}")
 
-# Export CMake Target
-SET(PROJECT_USE_CMAKE_EXPORT TRUE)
+# Project options
+OPTION(BUILD_PYTHON_INTERFACE "Build the python bindings" ON)
+OPTION(INSTALL_PYTHON_INTERFACE_ONLY "Install *ONLY* the python bindings" OFF)
+OPTION(SUFFIX_SO_VERSION "Suffix library name with its version" ON)
 
-# Disable -Werror on Unix for now.
-SET(CXX_DISABLE_WERROR True)
-
-INCLUDE(cmake/base.cmake)
-INCLUDE(cmake/python.cmake)
-INCLUDE(cmake/eigen.cmake)
-
-SET(DOXYGEN_USE_MATHJAX YES)
+# Project configuration
 IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
   SET(PROJECT_USE_CMAKE_EXPORT TRUE)
 ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
+SET(CXX_DISABLE_WERROR TRUE)
+SET(DOXYGEN_USE_MATHJAX YES)
 
+# JRL-cmakemodule setup
+INCLUDE(cmake/base.cmake)
+INCLUDE(cmake/python.cmake)
+
+# Project definition
 COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
 PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})
 
-
-# Trigger dependency to dynamic-graph-python
-ADD_PROJECT_DEPENDENCY(sot-core 4.8.1 REQUIRED PKG_CONFIG_REQUIRES "sot-core >= 4.8.1")
+# Project dependencies
+ADD_PROJECT_DEPENDENCY(sot-core REQUIRED PKG_CONFIG_REQUIRES sot-core)
 
 IF(BUILD_PYTHON_INTERFACE)
-  FINDPYTHON ()
-  FIND_NUMPY ()
-  INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
-  ADD_PROJECT_DEPENDENCY(dynamic-graph-python REQUIRED PKG_CONFIG_REQUIRES "dynamic-graph-python")
+  FINDPYTHON()
+  FIND_NUMPY()
+  ADD_PROJECT_DEPENDENCY(dynamic-graph-python REQUIRED
+    PKG_CONFIG_REQUIRES dynamic-graph-python)
 ENDIF(BUILD_PYTHON_INTERFACE)
 
-ADD_SUBDIRECTORY(include/sot/tools)
+# Main Library
+SET(${PROJECT_NAME}_HEADERS
+  include/sot/tools/cubic-interpolation.hh
+  include/sot/tools/cubic-interpolation-se3.hh
+  include/sot/tools/kinematic-planner.hh
+  include/sot/tools/seqplay.hh
+  include/sot/tools/simpleseqplay.hh
+  )
+
+SET(${PROJECT_NAME}_SOURCES
+  src/cubic-interpolation.cc
+  #src/kinematic-planner.cc
+  src/cubic-interpolation-se3.cc
+  src/oscillator.cc
+  src/seqplay.cc
+  src/simpleseqplay.cc
+  )
+
+# Verbosity level
+IF(NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
+  ADD_DEFINITIONS(-DVP_DEBUG_MODE=${CMAKE_VERBOSITY_LEVEL} -DVP_DEBUG)
+ENDIF(NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
+
+ADD_LIBRARY(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_HEADERS})
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} sot-core::sot-core)
+
+IF(SUFFIX_SO_VERSION)
+  SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})
+ENDIF(SUFFIX_SO_VERSION)
+
+IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
+  INSTALL(TARGETS ${PROJECT_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION lib)
+ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
+
 ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(tests)
+
+IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
+  INSTALL(FILES package.xml DESTINATION share/${PROJECT_NAME})
+ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)

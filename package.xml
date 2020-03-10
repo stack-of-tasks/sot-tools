@@ -1,6 +1,6 @@
 <package format="2">
   <name>sot-tools</name>
-  <version>2.2.1</version>
+  <version>2.2.2</version>
   <description>Miscellanous entities for the stack of tasks </description>
   <maintainer email="ostasse@laas.fr">Olivier Stasse</maintainer>
   <license>BSDv2</license>

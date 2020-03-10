@@ -20,6 +20,7 @@ OPTION(SUFFIX_SO_VERSION "Suffix library name with its version" ON)
 IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
   SET(PROJECT_USE_CMAKE_EXPORT TRUE)
 ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
+SET(CUSTOM_HEADER_DIR "sot/tools")
 SET(CXX_DISABLE_WERROR TRUE)
 SET(DOXYGEN_USE_MATHJAX YES)
 
@@ -36,18 +37,24 @@ ADD_PROJECT_DEPENDENCY(sot-core REQUIRED PKG_CONFIG_REQUIRES sot-core)
 
 IF(BUILD_PYTHON_INTERFACE)
   FINDPYTHON()
-  FIND_NUMPY()
+  STRING(REGEX REPLACE "-" "_" PYTHON_DIR ${CUSTOM_HEADER_DIR})
   ADD_PROJECT_DEPENDENCY(dynamic-graph-python REQUIRED
     PKG_CONFIG_REQUIRES dynamic-graph-python)
 ENDIF(BUILD_PYTHON_INTERFACE)
 
+# Verbosity level
+IF(NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
+  ADD_DEFINITIONS(-DVP_DEBUG_MODE=${CMAKE_VERBOSITY_LEVEL} -DVP_DEBUG)
+ENDIF(NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
+
+
 # Main Library
 SET(${PROJECT_NAME}_HEADERS
-  include/sot/tools/cubic-interpolation.hh
-  include/sot/tools/cubic-interpolation-se3.hh
-  include/sot/tools/kinematic-planner.hh
-  include/sot/tools/seqplay.hh
-  include/sot/tools/simpleseqplay.hh
+  include/${CUSTOM_HEADER_DIR}/cubic-interpolation.hh
+  include/${CUSTOM_HEADER_DIR}/cubic-interpolation-se3.hh
+  include/${CUSTOM_HEADER_DIR}/kinematic-planner.hh
+  include/${CUSTOM_HEADER_DIR}/seqplay.hh
+  include/${CUSTOM_HEADER_DIR}/simpleseqplay.hh
   )
 
 SET(${PROJECT_NAME}_SOURCES
@@ -58,11 +65,6 @@ SET(${PROJECT_NAME}_SOURCES
   src/seqplay.cc
   src/simpleseqplay.cc
   )
-
-# Verbosity level
-IF(NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
-  ADD_DEFINITIONS(-DVP_DEBUG_MODE=${CMAKE_VERBOSITY_LEVEL} -DVP_DEBUG)
-ENDIF(NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_HEADERS})
@@ -80,6 +82,7 @@ ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(tests)
 
+PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 IF(NOT INSTALL_PYTHON_INTERFACE_ONLY)
   INSTALL(FILES package.xml DESTINATION share/${PROJECT_NAME})
 ENDIF(NOT INSTALL_PYTHON_INTERFACE_ONLY)

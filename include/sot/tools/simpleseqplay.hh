@@ -26,6 +26,7 @@ namespace tools {
 namespace dg = dynamicgraph;
 
 class SimpleSeqPlay : public dg::Entity {
+ public:
   typedef int Dummy;
   dg::SignalTimeDependent<Dummy, int> firstSINTERN;
   dg::SignalTimeDependent<dg::Vector, int> postureSOUT_;
@@ -37,14 +38,18 @@ class SimpleSeqPlay : public dg::Entity {
 
   void load(const std::string& filename);
   void start();
+  void hold();
+  void unhold();
   virtual std::string getDocString() const;
 
  private:
   dg::Vector& computePosture(dg::Vector& pos, int t);
-  // 0: motion not started, 1: going to the current position to the first position.
+  // 0: motion not started,
+  // 1: going to the current position to the first position.
   // 2: motion in progress, 3: motion finished
   unsigned int state_;
-  unsigned int configId_;
+  std::size_t configId_prev_;
+  std::size_t configId_hold_;
   int startTime_;
 
   std::vector<dg::Vector> posture_;
@@ -52,9 +57,14 @@ class SimpleSeqPlay : public dg::Entity {
 
   std::vector<double> time_;
   double dt_;
+  /// Time to start.
   double time_to_start_;
   // Number of iterations performed in state1.
   int it_nbs_in_state1_;
+
+  /// Boolean to hold or not the posture.
+  bool hold_;
+  /// Current shift between holding time and startTime.
 
 };  // class SimpleSeqPlay
 }  // namespace tools

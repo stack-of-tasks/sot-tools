@@ -2,7 +2,7 @@
 #include <boost/test/output_test_stream.hpp>
 #include <boost/utility/binary.hpp>
 
-#include "simpleseqplay.hh"
+#include "sot/tools/simpleseqplay.hh"
 
 namespace dg = dynamicgraph;
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)

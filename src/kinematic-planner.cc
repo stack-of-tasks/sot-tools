@@ -285,8 +285,8 @@ void KinematicPlanner::delaySources() {
   Eigen::ArrayXcd V(nTimeSteps);
   for (int cur_time = 0; cur_time < nTimeSteps; cur_time++) {
     std::complex<double> pi_freq;
-    pi_freq.real() = 0;
-    pi_freq.imag() = cur_time;
+    pi_freq.real(0);
+    pi_freq.imag(cur_time);
     V(cur_time) = pi_freq;
   }
   V *= 2 * pi / nTimeSteps;

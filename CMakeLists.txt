@@ -56,6 +56,7 @@ SET(${PROJECT_NAME}_HEADERS
   include/${CUSTOM_HEADER_DIR}/cubic-interpolation.hh
   include/${CUSTOM_HEADER_DIR}/cubic-interpolation-se3.hh
   include/${CUSTOM_HEADER_DIR}/kinematic-planner.hh
+  include/${CUSTOM_HEADER_DIR}/oscillator.hh
   include/${CUSTOM_HEADER_DIR}/seqplay.hh
   include/${CUSTOM_HEADER_DIR}/simpleseqplay.hh
   )

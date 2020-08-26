@@ -5,12 +5,10 @@
 
 IF(BUILD_PYTHON_INTERFACE)
   DYNAMIC_GRAPH_PYTHON_MODULE(${PYTHON_DIR} ${PROJECT_NAME} wrap
-    DONT_INSTALL_INIT_PY
     MODULE_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/python.hh
     )
 
   SET(${PROJECT_NAME}_PYTHON
-    __init__.py
     se3.py
     quaternion.py
     )

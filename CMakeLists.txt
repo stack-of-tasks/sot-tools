@@ -26,6 +26,7 @@ SET(DOXYGEN_USE_MATHJAX YES)
 
 # JRL-cmakemodule setup
 INCLUDE(cmake/base.cmake)
+INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/python.cmake)
 
 # Project definition
@@ -38,6 +39,7 @@ ADD_PROJECT_DEPENDENCY(dynamic-graph-python REQUIRED PKG_CONFIG_REQUIRES dynamic
 
 IF(BUILD_PYTHON_INTERFACE)
   FINDPYTHON()
+  SEARCH_FOR_BOOST_PYTHON(REQUIRED)
   STRING(REGEX REPLACE "-" "_" PYTHON_DIR ${CUSTOM_HEADER_DIR})
   ADD_PROJECT_DEPENDENCY(dynamic-graph-python REQUIRED
     PKG_CONFIG_REQUIRES dynamic-graph-python)

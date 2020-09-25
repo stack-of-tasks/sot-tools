@@ -42,6 +42,11 @@ class SimpleSeqPlay : public dg::Entity {
   void unhold();
   virtual std::string getDocString() const;
 
+  bool waiting () const;
+  bool initializing () const;
+  bool executing () const;
+  bool finished () const;
+
  private:
   dg::Vector& computePosture(dg::Vector& pos, int t);
   // 0: motion not started,

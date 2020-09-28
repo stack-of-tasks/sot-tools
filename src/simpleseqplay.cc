@@ -135,15 +135,15 @@ void SimpleSeqPlay::start() {
 }
 
 dg::Vector& SimpleSeqPlay::computePosture(dg::Vector& pos, int t) {
-  if (posture_.size() == 0) {
-    throw std::runtime_error("SimpleSeqPlay posture: Signals not initialized. read files first.");
-  }
   std::size_t configId;
   // If we are still waiting to start
   if (state_ == 0) {
     // return the current posture.
     pos = currentPostureSIN_.access(t);
     return pos;
+  }
+  if (posture_.size() == 0) {
+    throw std::runtime_error("SimpleSeqPlay posture: Signals not initialized. read files first.");
   }
   // Going to the first position
   else if (state_ == 1) {

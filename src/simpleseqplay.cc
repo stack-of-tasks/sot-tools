@@ -40,7 +40,6 @@ SimpleSeqPlay::SimpleSeqPlay(const std::string& name)
                    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
       currentPostureSIN_(NULL, "SimpleSeqPlay(" + name + ")::input(vector)::currentPosture"),
       state_(0),
-      configId_prev_(0),
       startTime_(0),
       posture_(),
       time_(0),
@@ -67,8 +66,6 @@ SimpleSeqPlay::SimpleSeqPlay(const std::string& name)
   addCommand("load", makeCommandVoid1(*this, &SimpleSeqPlay::load, docstring));
 
   addCommand("start", makeCommandVoid0(*this, &SimpleSeqPlay::start, docCommandVoid0("Start motion")));
-  addCommand("hold", makeCommandVoid0(*this, &SimpleSeqPlay::hold, docCommandVoid0("Hold motion")));
-  addCommand("unhold", makeCommandVoid0(*this, &SimpleSeqPlay::unhold, docCommandVoid0("Restart motion")));
 
   docstring = "Set the time between the robot current pose and the starting of the buffer \n";
 
@@ -145,8 +142,9 @@ dg::Vector& SimpleSeqPlay::computePosture(dg::Vector& pos, int t) {
   if (posture_.size() == 0) {
     throw std::runtime_error("SimpleSeqPlay posture: Signals not initialized. read files first.");
   }
+
   // Going to the first position
-  else if (state_ == 1) {
+  if (state_ == 1) {
     // Compute the difference between current posture and desired one.
     dg::Vector deltapos = posture_[0] - currentPostureSIN_.access(t);
 
@@ -167,7 +165,6 @@ dg::Vector& SimpleSeqPlay::computePosture(dg::Vector& pos, int t) {
   // Tries to go through the list of postures.
   else if (state_ == 2) {
     configId = t - startTime_;
-    if (hold_) configId_hold_ = configId;
     if (configId == posture_.size() - 1) {
       state_ = 3;
     }
@@ -175,16 +172,8 @@ dg::Vector& SimpleSeqPlay::computePosture(dg::Vector& pos, int t) {
     configId = posture_.size() - 1;
   }
   pos = posture_[configId];
-  configId_prev_ = configId;
   return pos;
 }
-
-void SimpleSeqPlay::hold() {
-  hold_ = true;
-  configId_hold_ = configId_prev_;
-}
-
-void SimpleSeqPlay::unhold() { hold_ = false; }
 
 bool SimpleSeqPlay::waiting ()      const { return state_ == 0; }
 bool SimpleSeqPlay::initializing () const { return state_ == 1; }

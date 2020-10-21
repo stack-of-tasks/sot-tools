@@ -43,6 +43,7 @@ IF(BUILD_PYTHON_INTERFACE)
   ADD_PROJECT_DEPENDENCY(dynamic-graph-python 4.0.0 REQUIRED
     PKG_CONFIG_REQUIRES dynamic-graph-python)
 ENDIF(BUILD_PYTHON_INTERFACE)
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 # Verbosity level
 IF(NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))

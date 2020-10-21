@@ -38,8 +38,6 @@ class SimpleSeqPlay : public dg::Entity {
 
   void load(const std::string& filename);
   void start();
-  void hold();
-  void unhold();
   virtual std::string getDocString() const;
 
   bool waiting () const;
@@ -53,8 +51,6 @@ class SimpleSeqPlay : public dg::Entity {
   // 1: going to the current position to the first position.
   // 2: motion in progress, 3: motion finished
   unsigned int state_;
-  std::size_t configId_prev_;
-  std::size_t configId_hold_;
   int startTime_;
 
   std::vector<dg::Vector> posture_;
@@ -66,10 +62,6 @@ class SimpleSeqPlay : public dg::Entity {
   double time_to_start_;
   // Number of iterations performed in state1.
   int it_nbs_in_state1_;
-
-  /// Boolean to hold or not the posture.
-  bool hold_;
-  /// Current shift between holding time and startTime.
 
 };  // class SimpleSeqPlay
 }  // namespace tools

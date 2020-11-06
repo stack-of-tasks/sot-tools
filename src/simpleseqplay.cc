@@ -74,6 +74,8 @@ SimpleSeqPlay::SimpleSeqPlay(const std::string& name)
 }
 
 void SimpleSeqPlay::load(const std::string& filename) {
+  state_ = 0;
+
   using boost::escaped_list_separator;
   typedef boost::tokenizer<escaped_list_separator<char> > tokenizer_t;
   std::string line;
@@ -120,8 +122,6 @@ void SimpleSeqPlay::load(const std::string& filename) {
     posture_.push_back(config);
   }
   file.close();
-
-  state_ = 0;
 }
 
 void SimpleSeqPlay::start() {

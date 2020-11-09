@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>sot-tools</name>
-  <version>2.3.0</version>
+  <version>2.3.1</version>
   <description>Miscellanous entities for the stack of tasks </description>
   <maintainer email="ostasse@laas.fr">Olivier Stasse</maintainer>
   <license>BSD</license>
@@ -22,11 +22,11 @@
   <depend>sot-core</depend>
   <depend>dynamic-graph-python</depend>
   <doc_depend>doxygen</doc_depend>
-  
-  <buildtool_depend>cmake</buildtool_depend> 
-  
+
+  <buildtool_depend>cmake</buildtool_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>
-  
+
 </package>

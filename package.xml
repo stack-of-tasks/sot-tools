@@ -1,9 +1,10 @@
-<package format="2">
+<?xml version="1.0"?>
+<package format="3">
   <name>sot-tools</name>
   <version>2.3.0</version>
   <description>Miscellanous entities for the stack of tasks </description>
   <maintainer email="ostasse@laas.fr">Olivier Stasse</maintainer>
-  <license>BSDv2</license>
+  <license>BSD</license>
 
   <url>http://github.com/stack-of-tasks/sot-tools</url>
   <author>Mehdi Benallegue</author>
@@ -13,14 +14,19 @@
   <author>Olivier Stasse</author>
   <author>Jorrit T'Hooft</author>
 
-  <build_depend>roscpp</build_depend>
-  <build_depend>sot-core</build_depend>
-
-  <exec_depend>roscpp</exec_depend>
-  <exec_depend>sot-core</exec_depend>
-
-  <buildtool_depend>catkin</buildtool_depend>
-
+  <build_depend>git</build_depend>
+  <build_depend>doxygen</build_depend>
+  <!-- The following tags are recommended by REP-136 -->
+  <exec_depend condition="$ROS_VERSION == 1">catkin</exec_depend>
+  <exec_depend condition="$ROS_VERSION == 2">ament_cmake</exec_depend>
+  <depend>sot-core</depend>
+  <depend>dynamic-graph-python</depend>
   <doc_depend>doxygen</doc_depend>
-
+  
+  <buildtool_depend>cmake</buildtool_depend> 
+  
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+  
 </package>

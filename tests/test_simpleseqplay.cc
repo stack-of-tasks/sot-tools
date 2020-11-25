@@ -11,8 +11,10 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 BOOST_AUTO_TEST_CASE(test_simpleseqplay) {
   dg::sot::tools::SimpleSeqPlay aSimpleSeqPlay("simpleseqplay");
 
-  dg::Vector initial (32);
-  initial << 0.0, 0.0, -0.411354, 0.859395, -0.448041, -0.001708, 0.0, 0.0, -0.411354, 0.859395, -0.448041, -0.001708, 0.0, 0.006761, 0.25847, 0.173046, -0.0002, -0.525366, 0.0, -0.0, 0.1, -0.005, -0.25847, -0.173046, 0.0002, -0.525366, 0.0, 0.0, 0.1, -0.005, 0.0, 0.0;
+  dg::Vector initial(32);
+  initial << 0.0, 0.0, -0.411354, 0.859395, -0.448041, -0.001708, 0.0, 0.0, -0.411354, 0.859395, -0.448041, -0.001708,
+      0.0, 0.006761, 0.25847, 0.173046, -0.0002, -0.525366, 0.0, -0.0, 0.1, -0.005, -0.25847, -0.173046, 0.0002,
+      -0.525366, 0.0, 0.0, 0.1, -0.005, 0.0, 0.0;
   aSimpleSeqPlay.currentPostureSIN_.setConstant(initial);
 
   BOOST_CHECK(aSimpleSeqPlay.waiting());

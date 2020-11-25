@@ -175,10 +175,10 @@ dg::Vector& SimpleSeqPlay::computePosture(dg::Vector& pos, int t) {
   return pos;
 }
 
-bool SimpleSeqPlay::waiting ()      const { return state_ == 0; }
-bool SimpleSeqPlay::initializing () const { return state_ == 1; }
-bool SimpleSeqPlay::executing ()    const { return state_ == 2; }
-bool SimpleSeqPlay::finished ()     const { return state_ == 3; }
+bool SimpleSeqPlay::waiting() const { return state_ == 0; }
+bool SimpleSeqPlay::initializing() const { return state_ == 1; }
+bool SimpleSeqPlay::executing() const { return state_ == 2; }
+bool SimpleSeqPlay::finished() const { return state_ == 3; }
 
 std::string SimpleSeqPlay::getDocString() const {
   return "Provide joint references for a whole-body motion\n"

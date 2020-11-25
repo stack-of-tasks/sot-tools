@@ -40,10 +40,10 @@ class SimpleSeqPlay : public dg::Entity {
   void start();
   virtual std::string getDocString() const;
 
-  bool waiting () const;
-  bool initializing () const;
-  bool executing () const;
-  bool finished () const;
+  bool waiting() const;
+  bool initializing() const;
+  bool executing() const;
+  bool finished() const;
 
  private:
   dg::Vector& computePosture(dg::Vector& pos, int t);

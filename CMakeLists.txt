@@ -25,21 +25,19 @@ set(DOXYGEN_USE_MATHJAX YES)
 # JRL-cmakemodule setup
 include(cmake/base.cmake)
 include(cmake/boost.cmake)
-include(cmake/python.cmake)
 
 # Project definition
 compute_project_args(PROJECT_ARGS LANGUAGES CXX)
 project(${PROJECT_NAME} ${PROJECT_ARGS})
 
 # Project dependencies
+if(BUILD_PYTHON_INTERFACE)
+  add_project_dependency(dynamic-graph-python 4.0.0 REQUIRED)
+  string(REGEX REPLACE "-" "_" PYTHON_DIR ${CUSTOM_HEADER_DIR})
+endif(BUILD_PYTHON_INTERFACE)
+
 add_project_dependency(sot-core REQUIRED)
 
-if(BUILD_PYTHON_INTERFACE)
-  findpython()
-  search_for_boost_python(REQUIRED)
-  string(REGEX REPLACE "-" "_" PYTHON_DIR ${CUSTOM_HEADER_DIR})
-  add_project_dependency(dynamic-graph-python 4.0.0 REQUIRED)
-endif(BUILD_PYTHON_INTERFACE)
 find_package(
   Boost
   COMPONENTS unit_test_framework

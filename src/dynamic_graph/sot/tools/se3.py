@@ -23,7 +23,9 @@ class R(object):
             return R(self.value * other)
         if isinstance(other, R):
             return R(self.value * other.value)
-        raise TypeError("cannot multiply instances of type R and type " + str(type(other)))
+        raise TypeError(
+            "cannot multiply instances of type R and type " + str(type(other))
+        )
 
     def __str__(self):
         return str(self.value)
@@ -33,6 +35,7 @@ class R3(object):
     """
     Vectors of real number of dimension 3.
     """
+
     def __init__(self, *args):
         if len(args) == 1:
             if isinstance(args[0], R3):
@@ -44,8 +47,10 @@ class R3(object):
         elif len(args) == 3:
             self.value = numpy.array(map(float, args))
         else:
-            raise TypeError("constructor of R3 takes either three float," +
-                            ", an instance of R or a tuple of three float.")
+            raise TypeError(
+                "constructor of R3 takes either three float,"
+                + ", an instance of R or a tuple of three float."
+            )
         self.check()
 
     def check(self):
@@ -60,7 +65,11 @@ class R3(object):
         Check that argument is of type R3
         """
         if not isinstance(other, R3):
-            raise TypeError("second argument of operator " + operator + " should be an instance of R3.")
+            raise TypeError(
+                "second argument of operator "
+                + operator
+                + " should be an instance of R3."
+            )
 
     def crossprod(self, other):
         """
@@ -92,7 +101,7 @@ class R3(object):
         Operator *: inner product
         """
         self.checkOther(other, "*")
-        return reduce(lambda x, y: x + y[0] * y[1], zip(self, other), 0.)
+        return reduce(lambda x, y: x + y[0] * y[1], zip(self, other), 0.0)
 
     def __rmul__(self, number):
         """
@@ -135,6 +144,7 @@ class SO3(object):
     """
     Rotation matrix
     """
+
     def __init__(self, matrix):
         if isinstance(matrix, SO3):
             self.value = matrix.value
@@ -143,7 +153,10 @@ class SO3(object):
 
     def fromTuple(self, matrix):
         if len(matrix) != 3:
-            raise TypeError("expecting a tuple of " + "3 tuples of 3 float, got a tuple of length %i." % len(matrix))
+            raise TypeError(
+                "expecting a tuple of "
+                + "3 tuples of 3 float, got a tuple of length %i." % len(matrix)
+            )
         m = []
         for r in matrix:
             if len(r) != 3:
@@ -187,13 +200,17 @@ class SO3(object):
             return self.multiplyBySO3(other)
         if isinstance(other, R3):
             return self.multiplyByR3(other)
-        raise TypeError("Cannot multiply instance of SO3 by instance of " + str(type(other)) + ".")
+        raise TypeError(
+            "Cannot multiply instance of SO3 by instance of " + str(type(other)) + "."
+        )
 
     def multiplyByR3(self, other):
         return R3(self[0] * other, self[1] * other, self[2] * other)
 
     def multiplyBySO3(self, other):
-        return SO3(reduce(lambda m, col: m + (tuple(self * col), ), other.transpose(), ())).transpose()
+        return SO3(
+            reduce(lambda m, col: m + (tuple(self * col),), other.transpose(), ())
+        ).transpose()
 
 
 class SE3(object):
@@ -214,8 +231,10 @@ class SE3(object):
             self.rotation = SO3(tuple(map(lambda row: row[:3], matrix[:3])))
             self.translation = R3(tuple(map(lambda row: row[3], matrix[:3])))
         elif len(args) == 0:
-            self.rotation = SO3(((1., 0., 0.), (0., 1., 0.), (0., 0., 1.)), )
-            self.translation = R3(0., 0., 0.)
+            self.rotation = SO3(
+                ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+            )
+            self.translation = R3(0.0, 0.0, 0.0)
         else:
             raise ValueError("two many arguments.")
 
@@ -224,13 +243,23 @@ class SE3(object):
         Output as a string
         """
         return "((%f,%f,%f,%f),(%f,%f,%f,%f),(%f,%f,%f,%f),(0.,0.,0.,1.))" % (
-            self.rotation[0][0], self.rotation[0][1], self.rotation[0][2], self.translation[0], self.rotation[1][0],
-            self.rotation[1][1], self.rotation[1][2], self.translation[1], self.rotation[2][0], self.rotation[2][1],
-            self.rotation[2][2], self.translation[2])
+            self.rotation[0][0],
+            self.rotation[0][1],
+            self.rotation[0][2],
+            self.translation[0],
+            self.rotation[1][0],
+            self.rotation[1][1],
+            self.rotation[1][2],
+            self.translation[1],
+            self.rotation[2][0],
+            self.rotation[2][1],
+            self.rotation[2][2],
+            self.translation[2],
+        )
 
     def inverse(self):
         trRot = self.rotation.transpose()
-        return SE3(trRot, R(-1.) * (trRot * self.translation))
+        return SE3(trRot, R(-1.0) * (trRot * self.translation))
 
     def __mul__(self, other):
         """
@@ -239,36 +268,45 @@ class SE3(object):
           other argument is either
             - an instance of SE3 or,
             - an instance of R3.
-         """
+        """
         if isinstance(other, SE3):
             return self.multiplyBySE3(other)
         if isinstance(other, R3):
             return self.multiplyByR3(other)
-        raise TypeError("cannot multiply instance of SE3 by instance of " + str(type(other)))
+        raise TypeError(
+            "cannot multiply instance of SE3 by instance of " + str(type(other))
+        )
 
     def multiplyBySE3(self, other):
-        return SE3(self.rotation * other.rotation, self.rotation * other.translation + self.translation)
+        return SE3(
+            self.rotation * other.rotation,
+            self.rotation * other.translation + self.translation,
+        )
 
     def multiplyByR3(self, other):
         return R3(self.rotation * other + self.translation)
 
     def __getitem__(self, index):
         if index == 3:
-            return (0., 0., 0., 1.)
+            return (0.0, 0.0, 0.0, 1.0)
         else:
-            return tuple(self.rotation[index]) + (self.translation[index], )
+            return tuple(self.rotation[index]) + (self.translation[index],)
 
     def toMatrix(self):
         r = self.rotation
         t = self.translation
-        return ((r[0][0], r[0][1], r[0][2], t[0]), (r[1][0], r[1][1], r[1][2], t[1]), (r[2][0], r[2][1], r[2][2],
-                                                                                       t[2]), (0., 0., 0., 1.))
+        return (
+            (r[0][0], r[0][1], r[0][2], t[0]),
+            (r[1][0], r[1][1], r[1][2], t[1]),
+            (r[2][0], r[2][1], r[2][2], t[2]),
+            (0.0, 0.0, 0.0, 1.0),
+        )
 
 
-if __name__ == '__main__':
-    a = R(2.)
-    u = R3(1., 2., 3.)
-    v = R3(2., 3., 4.)
+if __name__ == "__main__":
+    a = R(2.0)
+    u = R3(1.0, 2.0, 3.0)
+    v = R3(2.0, 3.0, 4.0)
     print("a = " + str(a))
     print("u = " + str(u))
     print("v = " + str(v))
@@ -281,19 +319,39 @@ if __name__ == '__main__':
     for i, x in zip(range(3), u):
         print("u[%i] = %f" % (i, x))
 
-    rot = ((cos(pi / 6), -sin(pi / 6), 0.), (sin(pi / 6), cos(pi / 6), 0.), (0., 0., 1.))
+    rot = (
+        (cos(pi / 6), -sin(pi / 6), 0.0),
+        (sin(pi / 6), cos(pi / 6), 0.0),
+        (0.0, 0.0, 1.0),
+    )
     m1 = SO3(rot)
     print("m1 = " + str(m1))
     print("")
-    rot = ((cos(pi / 6), 0., -sin(pi / 6)), (0., 1., 0.), (sin(pi / 6), 0., cos(pi / 6)))
+    rot = (
+        (cos(pi / 6), 0.0, -sin(pi / 6)),
+        (0.0, 1.0, 0.0),
+        (sin(pi / 6), 0.0, cos(pi / 6)),
+    )
 
     m2 = SO3(rot)
     print("m2 = " + str(m2))
     print("")
 
     print("m1*m2 = " + str(m1 * m2))
-    print("should be ((%f,%f,%f),(%f,%f,%f),(%f,%f,%f))" %
-          (.75, -.5, -sqrt(3) / 4, sqrt(3) / 4, sqrt(3) / 2, -.25, .5, 0., sqrt(3) / 2))
+    print(
+        "should be ((%f,%f,%f),(%f,%f,%f),(%f,%f,%f))"
+        % (
+            0.75,
+            -0.5,
+            -sqrt(3) / 4,
+            sqrt(3) / 4,
+            sqrt(3) / 2,
+            -0.25,
+            0.5,
+            0.0,
+            sqrt(3) / 2,
+        )
+    )
     print("")
     m3 = SE3(m1 * m2, u)
     print("m3 = " + str(m3))

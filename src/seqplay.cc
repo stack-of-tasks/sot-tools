@@ -4,15 +4,14 @@
 // Author: Florent Lamiraux, Mehdi Benallegue
 //
 
-#include <vector>
-#include <stdexcept>
-#include <boost/tokenizer.hpp>
-
-#include <iostream>
+#include "sot/tools/seqplay.hh"
 
 #include <dynamic-graph/command-bind.h>
 
-#include "sot/tools/seqplay.hh"
+#include <boost/tokenizer.hpp>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
 
 namespace dynamicgraph {
 namespace sot {
@@ -29,12 +28,15 @@ Seqplay::Seqplay(const std::string& name)
       leftAnkleSOUT_("Seqplay(" + name + ")::output(MatrixHomo)::leftAnkle"),
       rightAnkleSOUT_("Seqplay(" + name + ")::output(MatrixHomo)::rightAnkle"),
       leftAnkleVelSOUT_("Seqplay(" + name + ")::output(Vector)::leftAnkleVel"),
-      rightAnkleVelSOUT_("Seqplay(" + name + ")::output(Vector)::rightAnkleVel"),
+      rightAnkleVelSOUT_("Seqplay(" + name +
+                         ")::output(Vector)::rightAnkleVel"),
       comSOUT_("Seqplay(" + name + ")::output(vector)::com"),
       comdotSOUT_("Seqplay(" + name + ")::output(vector)::comdot"),
       comddotSOUT_("Seqplay(" + name + ")::output(vector)::comddot"),
-      forceLeftFootSOUT_("Seqplay(" + name + ")::output(vector)::forceLeftFoot"),
-      forceRightFootSOUT_("Seqplay(" + name + ")::output(vector)::forceRightFoot"),
+      forceLeftFootSOUT_("Seqplay(" + name +
+                         ")::output(vector)::forceLeftFoot"),
+      forceRightFootSOUT_("Seqplay(" + name +
+                          ")::output(vector)::forceRightFoot"),
       zmpSOUT_("Seqplay(" + name + ")::output(vector)::zmp"),
       state_(0),
       startTime_(0),
@@ -47,22 +49,30 @@ Seqplay::Seqplay(const std::string& name)
       R0t_(),
       R1_(),
       R1R0t_() {
-  signalRegistration(postureSOUT_ << leftAnkleSOUT_ << rightAnkleSOUT_ << leftAnkleVelSOUT_ << rightAnkleVelSOUT_
-                                  << comSOUT_ << comdotSOUT_ << comddotSOUT_ << forceLeftFootSOUT_
-                                  << forceRightFootSOUT_ << zmpSOUT_);
+  signalRegistration(postureSOUT_ << leftAnkleSOUT_ << rightAnkleSOUT_
+                                  << leftAnkleVelSOUT_ << rightAnkleVelSOUT_
+                                  << comSOUT_ << comdotSOUT_ << comddotSOUT_
+                                  << forceLeftFootSOUT_ << forceRightFootSOUT_
+                                  << zmpSOUT_);
   postureSOUT_.setFunction(boost::bind(&Seqplay::computePosture, this, _1, _2));
   comSOUT_.setFunction(boost::bind(&Seqplay::computeCom, this, _1, _2));
-  leftAnkleSOUT_.setFunction(boost::bind(&Seqplay::computeLeftAnkle, this, _1, _2));
-  rightAnkleSOUT_.setFunction(boost::bind(&Seqplay::computeRightAnkle, this, _1, _2));
-  leftAnkleVelSOUT_.setFunction(boost::bind(&Seqplay::computeLeftAnkleVel, this, _1, _2));
-  rightAnkleVelSOUT_.setFunction(boost::bind(&Seqplay::computeRightAnkleVel, this, _1, _2));
+  leftAnkleSOUT_.setFunction(
+      boost::bind(&Seqplay::computeLeftAnkle, this, _1, _2));
+  rightAnkleSOUT_.setFunction(
+      boost::bind(&Seqplay::computeRightAnkle, this, _1, _2));
+  leftAnkleVelSOUT_.setFunction(
+      boost::bind(&Seqplay::computeLeftAnkleVel, this, _1, _2));
+  rightAnkleVelSOUT_.setFunction(
+      boost::bind(&Seqplay::computeRightAnkleVel, this, _1, _2));
   comdotSOUT_.setFunction(boost::bind(&Seqplay::computeComdot, this, _1, _2));
   comddotSOUT_.setFunction(boost::bind(&Seqplay::computeComddot, this, _1, _2));
 
   zmpSOUT_.setFunction(boost::bind(&Seqplay::computeZMP, this, _1, _2));
 
-  forceLeftFootSOUT_.setFunction(boost::bind(&Seqplay::computeForceLeftFoot, this, _1, _2));
-  forceRightFootSOUT_.setFunction(boost::bind(&Seqplay::computeForceRightFoot, this, _1, _2));
+  forceLeftFootSOUT_.setFunction(
+      boost::bind(&Seqplay::computeForceLeftFoot, this, _1, _2));
+  forceRightFootSOUT_.setFunction(
+      boost::bind(&Seqplay::computeForceRightFoot, this, _1, _2));
 
   std::string docstring =
       "Load files describing a whole-body motion as reference feature "
@@ -86,7 +96,8 @@ Seqplay::Seqplay(const std::string& name)
       "\n";
   addCommand("load", makeCommandVoid1(*this, &Seqplay::load, docstring));
 
-  addCommand("start", makeCommandVoid0(*this, &Seqplay::start, docCommandVoid0("Start motion")));
+  addCommand("start", makeCommandVoid0(*this, &Seqplay::start,
+                                       docCommandVoid0("Start motion")));
   for (size_t i = 0; i < 7; ++i) {
     facultativeFound_[i] = false;
   }
@@ -137,14 +148,18 @@ void Seqplay::load(const std::string& filename) {
 
   // both feet forces must be defined together
   if (facultativeFound_[0] != facultativeFound_[1]) {
-    throw std::runtime_error(std::string("File ") + (facultativeFound_[0] ? facultativefn[1] : facultativefn[0]) +
-                             " failed to open");
+    throw std::runtime_error(
+        std::string("File ") +
+        (facultativeFound_[0] ? facultativefn[1] : facultativefn[0]) +
+        " failed to open");
   }
 
   // both ankle velocity must be defined together
   if (facultativeFound_[5] != facultativeFound_[6]) {
-    throw std::runtime_error(std::string("File ") + (facultativeFound_[5] ? facultativefn[6] : facultativefn[5]) +
-                             " failed to open");
+    throw std::runtime_error(
+        std::string("File ") +
+        (facultativeFound_[5] ? facultativefn[6] : facultativefn[5]) +
+        " failed to open");
   }
 
   posture_.clear();
@@ -177,8 +192,8 @@ void Seqplay::load(const std::string& filename) {
     } else {
       if (postureSize != static_cast<int>(components.size()) - 1) {
         std::ostringstream oss;
-        oss << fn[0] << ", line " << lineNumber << ": config of size " << components.size() - 1 << ". Expecting "
-            << postureSize << ".";
+        oss << fn[0] << ", line " << lineNumber << ": config of size "
+            << components.size() - 1 << ". Expecting " << postureSize << ".";
         throw std::runtime_error(oss.str());
       }
     }
@@ -239,7 +254,8 @@ void Seqplay::load(const std::string& filename) {
       Vector comdot(3);
       if (components.size() != 4) {
         std::ostringstream oss;
-        oss << facultativefn[2] << ", line " << lineNumber << ": expecting 4 numbers.";
+        oss << facultativefn[2] << ", line " << lineNumber
+            << ": expecting 4 numbers.";
         throw std::runtime_error(oss.str());
       }
 
@@ -266,7 +282,8 @@ void Seqplay::load(const std::string& filename) {
       Vector comddot(3);
       if (components.size() != 4) {
         std::ostringstream oss;
-        oss << facultativefn[3] << ", line " << lineNumber << ": expecting 4 numbers.";
+        oss << facultativefn[3] << ", line " << lineNumber
+            << ": expecting 4 numbers.";
         throw std::runtime_error(oss.str());
       }
 
@@ -293,7 +310,8 @@ void Seqplay::load(const std::string& filename) {
       Vector ankledot(7);
       if (components.size() != 7) {
         std::ostringstream oss;
-        oss << facultativefn[5] << ", line " << lineNumber << ": expecting 7 numbers.";
+        oss << facultativefn[5] << ", line " << lineNumber
+            << ": expecting 7 numbers.";
         throw std::runtime_error(oss.str());
       }
 
@@ -320,7 +338,8 @@ void Seqplay::load(const std::string& filename) {
       Vector ankledot(7);
       if (components.size() != 7) {
         std::ostringstream oss;
-        oss << facultativefn[6] << ", line " << lineNumber << ": expecting 7 numbers.";
+        oss << facultativefn[6] << ", line " << lineNumber
+            << ": expecting 7 numbers.";
         throw std::runtime_error(oss.str());
       }
 
@@ -347,7 +366,8 @@ void Seqplay::load(const std::string& filename) {
       Vector zmp(3);
       if (components.size() != 4) {
         std::ostringstream oss;
-        oss << facultativefn[3] << ", line " << lineNumber << ": expecting 4 numbers.";
+        oss << facultativefn[3] << ", line " << lineNumber
+            << ": expecting 4 numbers.";
         throw std::runtime_error(oss.str());
       }
 
@@ -360,8 +380,9 @@ void Seqplay::load(const std::string& filename) {
   }
 
   // Check that size of files is the same
-  if (posture_.size() != leftAnkle_.size() || posture_.size() != rightAnkle_.size() ||
-      posture_.size() != com_.size() || (facultativeFound_[0] && posture_.size() != forceLeftFoot_.size()) ||
+  if (posture_.size() != leftAnkle_.size() ||
+      posture_.size() != rightAnkle_.size() || posture_.size() != com_.size() ||
+      (facultativeFound_[0] && posture_.size() != forceLeftFoot_.size()) ||
       (facultativeFound_[1] && posture_.size() != forceRightFoot_.size()) ||
       (facultativeFound_[2] && posture_.size() != comdot_.size()) ||
       (facultativeFound_[3] && posture_.size() != comddot_.size()) ||
@@ -369,31 +390,43 @@ void Seqplay::load(const std::string& filename) {
       (facultativeFound_[5] && posture_.size() != leftAnkleDot_.size()) ||
       (facultativeFound_[6] && posture_.size() != rightAnkleDot_.size())) {
     std::ostringstream oss;
-    oss << "Seqplay: Files should have the same number of lines. Read" << std::endl;
-    oss << "  " << posture_.size() << " lines from " << filename << ".posture," << std::endl;
-    oss << "  " << leftAnkle_.size() << " lines from " << filename << ".la," << std::endl;
-    oss << "  " << rightAnkle_.size() << " lines from " << filename << ".ra," << std::endl;
-    oss << "  " << com_.size() << " lines from " << filename << ".com," << std::endl;
+    oss << "Seqplay: Files should have the same number of lines. Read"
+        << std::endl;
+    oss << "  " << posture_.size() << " lines from " << filename << ".posture,"
+        << std::endl;
+    oss << "  " << leftAnkle_.size() << " lines from " << filename << ".la,"
+        << std::endl;
+    oss << "  " << rightAnkle_.size() << " lines from " << filename << ".ra,"
+        << std::endl;
+    oss << "  " << com_.size() << " lines from " << filename << ".com,"
+        << std::endl;
     if (facultativeFound_[0]) {
-      oss << "  " << forceLeftFoot_.size() << " lines from " << filename << ".fl" << std::endl;
-      oss << "  " << forceRightFoot_.size() << " lines from " << filename << ".fr" << std::endl;
+      oss << "  " << forceLeftFoot_.size() << " lines from " << filename
+          << ".fl" << std::endl;
+      oss << "  " << forceRightFoot_.size() << " lines from " << filename
+          << ".fr" << std::endl;
     }
 
     if (facultativeFound_[2]) {
-      oss << "  " << comdot_.size() << " lines from " << filename << ".comdot" << std::endl;
+      oss << "  " << comdot_.size() << " lines from " << filename << ".comdot"
+          << std::endl;
     }
 
     if (facultativeFound_[3]) {
-      oss << "  " << comddot_.size() << " lines from " << filename << ".comddot" << std::endl;
+      oss << "  " << comddot_.size() << " lines from " << filename << ".comddot"
+          << std::endl;
     }
 
     if (facultativeFound_[4]) {
-      oss << "  " << zmp_.size() << " lines from " << filename << ".zmp" << std::endl;
+      oss << "  " << zmp_.size() << " lines from " << filename << ".zmp"
+          << std::endl;
     }
 
     if (facultativeFound_[5]) {
-      oss << "  " << leftAnkleDot_.size() << " lines from " << filename << ".ladot" << std::endl;
-      oss << "  " << leftAnkleDot_.size() << " lines from " << filename << ".radot" << std::endl;
+      oss << "  " << leftAnkleDot_.size() << " lines from " << filename
+          << ".ladot" << std::endl;
+      oss << "  " << leftAnkleDot_.size() << " lines from " << filename
+          << ".radot" << std::endl;
     }
 
     throw std::runtime_error(oss.str());
@@ -404,15 +437,17 @@ void Seqplay::load(const std::string& filename) {
 void Seqplay::start() {
   if (state_ == 0) {
     state_ = 1;
-    startTime_ = std::max(std::max(comSOUT_.getTime(), comdotSOUT_.getTime()),
-                          std::max(leftAnkleSOUT_.getTime(), rightAnkleSOUT_.getTime()));
+    startTime_ =
+        std::max(std::max(comSOUT_.getTime(), comdotSOUT_.getTime()),
+                 std::max(leftAnkleSOUT_.getTime(), rightAnkleSOUT_.getTime()));
     startTime_ = std::max(startTime_, postureSOUT_.getTime());
   }
 }
 
 Vector& Seqplay::computePosture(Vector& pos, const int& t) {
   if (posture_.size() == 0) {
-    throw std::runtime_error("Seqplay posture: Signals not initialized. read files first.");
+    throw std::runtime_error(
+        "Seqplay posture: Signals not initialized. read files first.");
   }
   std::size_t configId;
   if (state_ == 0) {
@@ -429,9 +464,11 @@ Vector& Seqplay::computePosture(Vector& pos, const int& t) {
   return pos;
 }
 
-MatrixHomogeneous& Seqplay::computeLeftAnkle(MatrixHomogeneous& la, const int& t) {
+MatrixHomogeneous& Seqplay::computeLeftAnkle(MatrixHomogeneous& la,
+                                             const int& t) {
   if (leftAnkle_.size() == 0) {
-    throw std::runtime_error("Seqplay leftAnkle: Signals not initialized. read files first.");
+    throw std::runtime_error(
+        "Seqplay leftAnkle: Signals not initialized. read files first.");
   }
   std::size_t configId;
   if (state_ == 0) {
@@ -448,9 +485,11 @@ MatrixHomogeneous& Seqplay::computeLeftAnkle(MatrixHomogeneous& la, const int& t
   return la;
 }
 
-MatrixHomogeneous& Seqplay::computeRightAnkle(MatrixHomogeneous& ra, const int& t) {
+MatrixHomogeneous& Seqplay::computeRightAnkle(MatrixHomogeneous& ra,
+                                              const int& t) {
   if (rightAnkle_.size() == 0) {
-    throw std::runtime_error("Seqplay rightAnkle: Signals not initialized. read files first.");
+    throw std::runtime_error(
+        "Seqplay rightAnkle: Signals not initialized. read files first.");
   }
   std::size_t configId;
   if (state_ == 0) {
@@ -467,8 +506,9 @@ MatrixHomogeneous& Seqplay::computeRightAnkle(MatrixHomogeneous& ra, const int& 
   return ra;
 }
 
-Vector& Seqplay::computeAnkleVelocity(Vector& velocity, const std::vector<MatrixHomogeneous>& ankleVector,
-                                      const int& t) {
+Vector& Seqplay::computeAnkleVelocity(
+    Vector& velocity, const std::vector<MatrixHomogeneous>& ankleVector,
+    const int& t) {
   velocity.resize(6);
   velocity.setZero();
   std::size_t configId;
@@ -545,7 +585,8 @@ Vector& Seqplay::computeRightAnkleVel(Vector& velocity, const int& t) {
 
 Vector& Seqplay::computeCom(Vector& com, const int& t) {
   if (com_.size() == 0) {
-    throw std::runtime_error("Seqplay com: Signals not initialized. read files first.");
+    throw std::runtime_error(
+        "Seqplay com: Signals not initialized. read files first.");
   }
   std::size_t configId;
   if (state_ == 0) {
@@ -600,7 +641,8 @@ Vector& Seqplay::computeComdot(Vector& comdot, const int& t) {
     // finite differences
 
     if (com_.size() == 0) {
-      throw std::runtime_error("Seqplay comdot: Signals not initialized. read files first.");
+      throw std::runtime_error(
+          "Seqplay comdot: Signals not initialized. read files first.");
     }
     std::size_t configId;
     if (state_ == 0) {
@@ -643,7 +685,8 @@ Vector& Seqplay::computeComddot(Vector& comddot, const int& t) {
   } else {
     // finite differences
     if (com_.size() == 0) {
-      throw std::runtime_error("Seqplay comddot: Signals not initialized. read files first.");
+      throw std::runtime_error(
+          "Seqplay comddot: Signals not initialized. read files first.");
     }
     std::size_t configId;
     if (state_ == 0) {
@@ -685,9 +728,12 @@ Vector& Seqplay::computeComddot(Vector& comddot, const int& t) {
   }
 }
 
-Vector& Seqplay::computeForceFoot(Vector& force, const std::vector<Vector>& forceVector, const int& t) {
+Vector& Seqplay::computeForceFoot(Vector& force,
+                                  const std::vector<Vector>& forceVector,
+                                  const int& t) {
   if (forceVector.size() == 0) {
-    throw std::runtime_error("Seqplay foot force: Force signals not initialized.");
+    throw std::runtime_error(
+        "Seqplay foot force: Force signals not initialized.");
   }
   std::size_t configId;
   if (state_ == 0) {
@@ -715,7 +761,8 @@ Vector& Seqplay::computeForceRightFoot(Vector& force, const int& t) {
 std::string Seqplay::getDocString() const {
   return "Provide task references for a whole-body motion\n"
          "\n"
-         "  The reference trajectories of the following features is loaded from files\n"
+         "  The reference trajectories of the following features is loaded "
+         "from files\n"
          "  using command load:\n"
          "    - posture,\n"
          "    - left ankle,\n"
@@ -729,7 +776,9 @@ std::string Seqplay::getDocString() const {
          "  Warning: pluging signals before loading trajectories will fail.\n";
 }
 
-void Seqplay::readAnkleFile(std::ifstream& file, std::vector<MatrixHomogeneous>& data, const std::string& filename) {
+void Seqplay::readAnkleFile(std::ifstream& file,
+                            std::vector<MatrixHomogeneous>& data,
+                            const std::string& filename) {
   using boost::escaped_list_separator;
   typedef boost::tokenizer<escaped_list_separator<char> > tokenizer_t;
   unsigned int lineNumber = 0;
@@ -746,7 +795,8 @@ void Seqplay::readAnkleFile(std::ifstream& file, std::vector<MatrixHomogeneous>&
     if (components.size() == 0) break;
     if (components.size() != 17) {
       std::ostringstream oss;
-      oss << filename << ", line " << lineNumber << ": expecting 17 numbers, got " << components.size() << ".";
+      oss << filename << ", line " << lineNumber
+          << ": expecting 17 numbers, got " << components.size() << ".";
       throw std::runtime_error(oss.str());
     }
     MatrixHomogeneous la;
@@ -762,7 +812,8 @@ void Seqplay::readAnkleFile(std::ifstream& file, std::vector<MatrixHomogeneous>&
   file.close();
 }
 
-void Seqplay::readForceFile(std::ifstream& file, std::vector<Vector>& data, const std::string& filename) {
+void Seqplay::readForceFile(std::ifstream& file, std::vector<Vector>& data,
+                            const std::string& filename) {
   using boost::escaped_list_separator;
   typedef boost::tokenizer<escaped_list_separator<char> > tokenizer_t;
   unsigned int lineNumber = 0;
@@ -779,7 +830,8 @@ void Seqplay::readForceFile(std::ifstream& file, std::vector<Vector>& data, cons
     if (components.size() == 0) break;
     if (components.size() != 7) {
       std::ostringstream oss;
-      oss << filename << ", line " << lineNumber << ": expecting 7 numbers, got " << components.size() << ".";
+      oss << filename << ", line " << lineNumber
+          << ": expecting 7 numbers, got " << components.size() << ".";
       throw std::runtime_error(oss.str());
     }
     Vector force(6);

@@ -6,18 +6,17 @@
 // Simple sequence player just playing back a set of poses.
 //
 
-#include <vector>
-#include <stdexcept>
-#include <boost/tokenizer.hpp>
-
-#include <iostream>
+#include "sot/tools/simpleseqplay.hh"
 
 #include <dynamic-graph/command-bind.h>
-#include <dynamic-graph/command-setter.h>
-#include <dynamic-graph/command-direct-setter.h>
 #include <dynamic-graph/command-direct-getter.h>
+#include <dynamic-graph/command-direct-setter.h>
+#include <dynamic-graph/command-setter.h>
 
-#include "sot/tools/simpleseqplay.hh"
+#include <boost/tokenizer.hpp>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
 
 namespace dynamicgraph {
 namespace sot {
@@ -35,10 +34,13 @@ using dynamicgraph::command::makeCommandVoid1;
 
 SimpleSeqPlay::SimpleSeqPlay(const std::string& name)
     : Entity(name),
-      firstSINTERN(NULL, sotNOSIGNAL, "SimpleSeqPlay(" + name + ")::intern(dummy)::init"),
-      postureSOUT_(boost::bind(&SimpleSeqPlay::computePosture, this, _1, _2), currentPostureSIN_,
+      firstSINTERN(NULL, sotNOSIGNAL,
+                   "SimpleSeqPlay(" + name + ")::intern(dummy)::init"),
+      postureSOUT_(boost::bind(&SimpleSeqPlay::computePosture, this, _1, _2),
+                   currentPostureSIN_,
                    "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
-      currentPostureSIN_(NULL, "SimpleSeqPlay(" + name + ")::input(vector)::currentPosture"),
+      currentPostureSIN_(
+          NULL, "SimpleSeqPlay(" + name + ")::input(vector)::currentPosture"),
       state_(0),
       startTime_(0),
       posture_(),
@@ -65,12 +67,17 @@ SimpleSeqPlay::SimpleSeqPlay(const std::string& name)
       "\n";
   addCommand("load", makeCommandVoid1(*this, &SimpleSeqPlay::load, docstring));
 
-  addCommand("start", makeCommandVoid0(*this, &SimpleSeqPlay::start, docCommandVoid0("Start motion")));
+  addCommand("start", makeCommandVoid0(*this, &SimpleSeqPlay::start,
+                                       docCommandVoid0("Start motion")));
 
-  docstring = "Set the time between the robot current pose and the starting of the buffer \n";
+  docstring =
+      "Set the time between the robot current pose and the starting of the "
+      "buffer \n";
 
   addCommand("setTimeToStart",
-             makeDirectSetter(*this, &time_to_start_, docDirectSetter("Time to start of the buffer", "double")));
+             makeDirectSetter(
+                 *this, &time_to_start_,
+                 docDirectSetter("Time to start of the buffer", "double")));
 }
 
 void SimpleSeqPlay::load(const std::string& filename) {
@@ -110,8 +117,8 @@ void SimpleSeqPlay::load(const std::string& filename) {
     } else {
       if (postureSize != static_cast<int>(components.size()) - 1) {
         std::ostringstream oss;
-        oss << fn << ", line " << lineNumber << ": config of size " << components.size() - 1 << ". Expecting "
-            << postureSize << ".";
+        oss << fn << ", line " << lineNumber << ": config of size "
+            << components.size() - 1 << ". Expecting " << postureSize << ".";
         throw std::runtime_error(oss.str());
       }
     }
@@ -140,7 +147,8 @@ dg::Vector& SimpleSeqPlay::computePosture(dg::Vector& pos, int t) {
     return pos;
   }
   if (posture_.size() == 0) {
-    throw std::runtime_error("SimpleSeqPlay posture: Signals not initialized. read files first.");
+    throw std::runtime_error(
+        "SimpleSeqPlay posture: Signals not initialized. read files first.");
   }
 
   // Going to the first position
@@ -149,7 +157,8 @@ dg::Vector& SimpleSeqPlay::computePosture(dg::Vector& pos, int t) {
     dg::Vector deltapos = posture_[0] - currentPostureSIN_.access(t);
 
     // If sufficiently closed to the first posture of the seqplay.
-    if ((deltapos.norm() < 1e-4) || (((dt_ + 1) * it_nbs_in_state1_) > time_to_start_)) {
+    if ((deltapos.norm() < 1e-4) ||
+        (((dt_ + 1) * it_nbs_in_state1_) > time_to_start_)) {
       // Switch to the next state.
       state_ = 2;
       startTime_ = postureSOUT_.getTime();

@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE simpleseqplay
-#include <boost/test/unit_test.hpp>
 #include <boost/test/output_test_stream.hpp>
+#include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
 #include "sot/tools/simpleseqplay.hh"
@@ -12,9 +12,10 @@ BOOST_AUTO_TEST_CASE(test_simpleseqplay) {
   dg::sot::tools::SimpleSeqPlay aSimpleSeqPlay("simpleseqplay");
 
   dg::Vector initial(32);
-  initial << 0.0, 0.0, -0.411354, 0.859395, -0.448041, -0.001708, 0.0, 0.0, -0.411354, 0.859395, -0.448041, -0.001708,
-      0.0, 0.006761, 0.25847, 0.173046, -0.0002, -0.525366, 0.0, -0.0, 0.1, -0.005, -0.25847, -0.173046, 0.0002,
-      -0.525366, 0.0, 0.0, 0.1, -0.005, 0.0, 0.0;
+  initial << 0.0, 0.0, -0.411354, 0.859395, -0.448041, -0.001708, 0.0, 0.0,
+      -0.411354, 0.859395, -0.448041, -0.001708, 0.0, 0.006761, 0.25847,
+      0.173046, -0.0002, -0.525366, 0.0, -0.0, 0.1, -0.005, -0.25847, -0.173046,
+      0.0002, -0.525366, 0.0, 0.0, 0.1, -0.005, 0.0, 0.0;
   aSimpleSeqPlay.currentPostureSIN_.setConstant(initial);
 
   BOOST_CHECK(aSimpleSeqPlay.waiting());

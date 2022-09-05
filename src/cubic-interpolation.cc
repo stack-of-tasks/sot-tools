@@ -4,12 +4,12 @@
 // Author: Florent Lamiraux
 //
 
-#include <dynamic-graph/command.h>
+#include "sot/tools/cubic-interpolation.hh"
+
 #include <dynamic-graph/command-bind.h>
 #include <dynamic-graph/command-setter.h>
+#include <dynamic-graph/command.h>
 #include <dynamic-graph/factory.h>
-
-#include "sot/tools/cubic-interpolation.hh"
 
 namespace dynamicgraph {
 namespace sot {
@@ -32,8 +32,10 @@ CubicInterpolation::CubicInterpolation(const std::string& name)
   signalRegistration(soutdotSOUT_);
   signalRegistration(initSIN_);
   signalRegistration(goalSIN_);
-  soutSOUT_.setFunction(boost::bind(&CubicInterpolation::computeSout, this, _1, _2));
-  soutdotSOUT_.setFunction(boost::bind(&CubicInterpolation::computeSoutdot, this, _1, _2));
+  soutSOUT_.setFunction(
+      boost::bind(&CubicInterpolation::computeSout, this, _1, _2));
+  soutdotSOUT_.setFunction(
+      boost::bind(&CubicInterpolation::computeSoutdot, this, _1, _2));
   std::string docstring;
   docstring =
       "  Set sampling period of control discretization.\n"
@@ -41,8 +43,9 @@ CubicInterpolation::CubicInterpolation(const std::string& name)
       "    Input:\n"
       "      - a floating point value.\n"
       "\n";
-  addCommand("setSamplingPeriod", new command::Setter<CubicInterpolation, double>(
-                                      *this, &CubicInterpolation::setSamplingPeriod, docstring));
+  addCommand("setSamplingPeriod",
+             new command::Setter<CubicInterpolation, double>(
+                 *this, &CubicInterpolation::setSamplingPeriod, docstring));
   docstring =
       "  Start tracking.\n"
       "\n"
@@ -52,14 +55,16 @@ CubicInterpolation::CubicInterpolation(const std::string& name)
       "\n  Read init and goal signals, compute output trajectory and"
       " start\n"
       "tracking.\n";
-  addCommand("start", new command::Setter<CubicInterpolation, double>(*this, &CubicInterpolation::start, docstring));
+  addCommand("start", new command::Setter<CubicInterpolation, double>(
+                          *this, &CubicInterpolation::start, docstring));
   docstring =
       "  Reset interpolation before calling start again\n"
       "\n"
       "    After the end of an interpolation, goal signal is copied into\n"
       "    sout signal. Calling reset make the entity copy init signal into\n"
       "    sout signal.\n";
-  addCommand("reset", command::makeCommandVoid0(*this, &CubicInterpolation::reset, docstring));
+  addCommand("reset", command::makeCommandVoid0(
+                          *this, &CubicInterpolation::reset, docstring));
 }
 
 CubicInterpolation::~CubicInterpolation() {}
@@ -121,7 +126,9 @@ Vector& CubicInterpolation::computeSoutdot(Vector& soutdot, const int& inTime) {
   return soutdot;
 }
 
-void CubicInterpolation::setSamplingPeriod(const double& period) { samplingPeriod_ = period; }
+void CubicInterpolation::setSamplingPeriod(const double& period) {
+  samplingPeriod_ = period;
+}
 
 void CubicInterpolation::start(const double& duration) { doStart(duration); }
 

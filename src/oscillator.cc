@@ -5,8 +5,9 @@
 //         Mehdi Benallegue <mehdi@benallegue.com>
 //
 
-#include <limits>
 #include "sot/tools/oscillator.hh"
+
+#include <limits>
 
 namespace dynamicgraph {
 namespace sot {
@@ -31,7 +32,9 @@ Oscillator::Oscillator(const std::string name)
       continuous_(false),
       dt_(0.),
       lastValue_(0.0) {
-  signalRegistration(angularFrequencySIN_ << magnitudeSIN_ << phaseSIN_ << biasSIN_ << soutSOUT_ << vectorSoutSOUT_);
+  signalRegistration(angularFrequencySIN_ << magnitudeSIN_ << phaseSIN_
+                                          << biasSIN_ << soutSOUT_
+                                          << vectorSoutSOUT_);
   angularFrequencySIN_.setConstant(0.);
   magnitudeSIN_.setConstant(0.);
   phaseSIN_.setConstant(0.);
@@ -43,42 +46,65 @@ Oscillator::Oscillator(const std::string name)
   soutSOUT_.addDependency(phaseSIN_);
   vectorSoutSOUT_.addDependency(soutSOUT_);
   soutSOUT_.setFunction(boost::bind(&Oscillator::computeSignal, this, _1, _2));
-  vectorSoutSOUT_.setFunction(boost::bind(&Oscillator::computeVectorSignal, this, _1, _2));
+  vectorSoutSOUT_.setFunction(
+      boost::bind(&Oscillator::computeVectorSignal, this, _1, _2));
   soutSOUT_.setNeedUpdateFromAllChildren(true);
   soutSOUT_.setDependencyType(TimeDependency<int>::ALWAYS_READY);
 
-  addCommand("setTimePeriod", makeDirectSetter(*this, &dt_, docDirectSetter("time period", "double")));
-  addCommand("getTimePeriod", makeDirectGetter(*this, &dt_, docDirectGetter("time period", "double")));
+  addCommand(
+      "setTimePeriod",
+      makeDirectSetter(*this, &dt_, docDirectSetter("time period", "double")));
+  addCommand(
+      "getTimePeriod",
+      makeDirectGetter(*this, &dt_, docDirectGetter("time period", "double")));
 
-  addCommand("setActivated", makeDirectSetter(*this, &started_, docDirectSetter("activated", "bool")));
+  addCommand(
+      "setActivated",
+      makeDirectSetter(*this, &started_, docDirectSetter("activated", "bool")));
 
-  addCommand("getActivated", makeDirectGetter(*this, &started_, docDirectGetter("activated", "bool")));
+  addCommand(
+      "getActivated",
+      makeDirectGetter(*this, &started_, docDirectGetter("activated", "bool")));
 
-  /// epsilon is used to ensure there is no discontinuity when starting or stopping
-  /// the oscillator. It defines the sensitivity to discontinuities
+  /// epsilon is used to ensure there is no discontinuity when starting or
+  /// stopping the oscillator. It defines the sensitivity to discontinuities
   addCommand("setEpsilon",
-             makeDirectSetter(*this, &epsilon_, docDirectSetter("ocillator zero-sensitivity", "double")));
+             makeDirectSetter(
+                 *this, &epsilon_,
+                 docDirectSetter("ocillator zero-sensitivity", "double")));
 
   addCommand("getEpsilon",
-             makeDirectGetter(*this, &epsilon_, docDirectGetter("ocillator zero-sensitivity", "double")));
+             makeDirectGetter(
+                 *this, &epsilon_,
+                 docDirectGetter("ocillator zero-sensitivity", "double")));
 
   addCommand("setValue",
-             makeDirectSetter(*this, &lastValue_, docDirectSetter("init value of the oscillator", "double")));
+             makeDirectSetter(
+                 *this, &lastValue_,
+                 docDirectSetter("init value of the oscillator", "double")));
 
   addCommand("getValue",
-             makeDirectGetter(*this, &lastValue_, docDirectGetter("current value of the oscillator", "double")));
+             makeDirectGetter(
+                 *this, &lastValue_,
+                 docDirectGetter("current value of the oscillator", "double")));
 
-  addCommand("setContinuous", makeDirectSetter(*this, &continuous_, docDirectSetter("continuous", "bool")));
+  addCommand("setContinuous",
+             makeDirectSetter(*this, &continuous_,
+                              docDirectSetter("continuous", "bool")));
 
-  addCommand("getContinuous", makeDirectGetter(*this, &continuous_, docDirectGetter("continuous", "bool")));
+  addCommand("getContinuous",
+             makeDirectGetter(*this, &continuous_,
+                              docDirectGetter("continuous", "bool")));
 }
 
-double Oscillator::value(double dt, double t, double omega, double phase, double m, double bias) {
+double Oscillator::value(double dt, double t, double omega, double phase,
+                         double m, double bias) {
   double tau = dt * t;
   return m * sin(omega * tau + phase) + bias;
 }
 
-dynamicgraph::Vector& Oscillator::computeVectorSignal(dynamicgraph::Vector& vsout, const int& t) {
+dynamicgraph::Vector& Oscillator::computeVectorSignal(
+    dynamicgraph::Vector& vsout, const int& t) {
   vsout.resize(1);
   vsout(0) = soutSOUT_.access(t);
   return vsout;

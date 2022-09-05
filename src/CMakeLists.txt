@@ -1,19 +1,14 @@
-# Copyright 2012, 2020, CNRS
-# Author: Florent Lamiraux
-# Author: Guilhem Saurel
+# Copyright 2012, 2020, CNRS Author: Florent Lamiraux Author: Guilhem Saurel
 #
 
-IF(BUILD_PYTHON_INTERFACE)
-  DYNAMIC_GRAPH_PYTHON_MODULE(${PYTHON_DIR} ${PROJECT_NAME} wrap
-    SOURCE_PYTHON_MODULE ${CMAKE_CURRENT_SOURCE_DIR}/python-module.cc
-    )
+if(BUILD_PYTHON_INTERFACE)
+  dynamic_graph_python_module(
+    ${PYTHON_DIR} ${PROJECT_NAME} wrap SOURCE_PYTHON_MODULE
+    ${CMAKE_CURRENT_SOURCE_DIR}/python-module.cc)
 
-  SET(${PROJECT_NAME}_PYTHON
-    se3.py
-    quaternion.py
-    )
+  set(${PROJECT_NAME}_PYTHON se3.py quaternion.py)
 
-  FOREACH(file ${${PROJECT_NAME}_PYTHON})
-    PYTHON_INSTALL_ON_SITE("dynamic_graph/${PYTHON_DIR}" ${file})
-  ENDFOREACH(file ${${PROJECT_NAME}_PYTHON})
-ENDIF(BUILD_PYTHON_INTERFACE)
+  foreach(file ${${PROJECT_NAME}_PYTHON})
+    python_install_on_site("dynamic_graph/${PYTHON_DIR}" ${file})
+  endforeach(file ${${PROJECT_NAME}_PYTHON})
+endif(BUILD_PYTHON_INTERFACE)

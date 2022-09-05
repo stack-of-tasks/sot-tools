@@ -4,23 +4,28 @@
 // Author: Florent Lamiraux
 //
 
-#include <dynamic-graph/command.h>
+#include "sot/tools/cubic-interpolation-se3.hh"
+
 #include <dynamic-graph/command-bind.h>
 #include <dynamic-graph/command-setter.h>
+#include <dynamic-graph/command.h>
 #include <dynamic-graph/factory.h>
-
-#include "sot/tools/cubic-interpolation-se3.hh"
 
 namespace dynamicgraph {
 namespace sot {
 namespace tools {
-DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN(CubicInterpolationSE3, "CubicInterpolationSE3");
+DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN(CubicInterpolationSE3,
+                                   "CubicInterpolationSE3");
 CubicInterpolationSE3::CubicInterpolationSE3(const std::string& name)
     : Entity(name),
-      soutSOUT_("CubicInterpolationSE3(" + name + ")::output(MatrixHomo)::sout"),
-      soutdotSOUT_("CubicInterpolationSE3(" + name + ")::output(vector)::soutdot"),
-      initSIN_(NULL, "CubicInterpolationSE3(" + name + ")::input(MatrixHomo)::init"),
-      goalSIN_(NULL, "CubicInterpolationSE3(" + name + ")::input(MatrixHomo)::goal"),
+      soutSOUT_("CubicInterpolationSE3(" + name +
+                ")::output(MatrixHomo)::sout"),
+      soutdotSOUT_("CubicInterpolationSE3(" + name +
+                   ")::output(vector)::soutdot"),
+      initSIN_(NULL,
+               "CubicInterpolationSE3(" + name + ")::input(MatrixHomo)::init"),
+      goalSIN_(NULL,
+               "CubicInterpolationSE3(" + name + ")::input(MatrixHomo)::goal"),
       startTime_(0),
       samplingPeriod_(0.),
       state_(0),
@@ -34,7 +39,8 @@ CubicInterpolationSE3::CubicInterpolationSE3(const std::string& name)
   signalRegistration(soutdotSOUT_);
   signalRegistration(initSIN_);
   signalRegistration(goalSIN_);
-  soutSOUT_.setFunction(boost::bind(&CubicInterpolationSE3::computeSout, this, _1, _2));
+  soutSOUT_.setFunction(
+      boost::bind(&CubicInterpolationSE3::computeSout, this, _1, _2));
   soutdot_.setZero();
   soutdotSOUT_.setConstant(soutdot_);
 
@@ -46,8 +52,9 @@ CubicInterpolationSE3::CubicInterpolationSE3(const std::string& name)
       "    Input:\n"
       "      - a floating point value.\n"
       "\n";
-  addCommand("setSamplingPeriod", new command::Setter<CubicInterpolationSE3, double>(
-                                      *this, &CubicInterpolationSE3::setSamplingPeriod, docstring));
+  addCommand("setSamplingPeriod",
+             new command::Setter<CubicInterpolationSE3, double>(
+                 *this, &CubicInterpolationSE3::setSamplingPeriod, docstring));
   docstring =
       "\n"
       "    Start tracking.\n"
@@ -57,15 +64,16 @@ CubicInterpolationSE3::CubicInterpolationSE3(const std::string& name)
       "\n"
       "\n  Read init and goal signals, compute output trajectory and start\n"
       "tracking.\n";
-  addCommand("start",
-             new command::Setter<CubicInterpolationSE3, double>(*this, &CubicInterpolationSE3::start, docstring));
+  addCommand("start", new command::Setter<CubicInterpolationSE3, double>(
+                          *this, &CubicInterpolationSE3::start, docstring));
   docstring =
       "  Reset interpolation before calling start again\n"
       "\n"
       "    After the end of an interpolation, goal signal is copied into\n"
       "    sout signal. Calling reset make the entity copy init signal into\n"
       "    sout signal.\n";
-  addCommand("reset", command::makeCommandVoid0(*this, &CubicInterpolationSE3::reset, docstring));
+  addCommand("reset", command::makeCommandVoid0(
+                          *this, &CubicInterpolationSE3::reset, docstring));
 }
 
 CubicInterpolationSE3::~CubicInterpolationSE3() {}
@@ -84,7 +92,8 @@ std::string CubicInterpolationSE3::getDocString() const {
 
 void CubicInterpolationSE3::reset() { state_ = 0; }
 
-sot::MatrixHomogeneous& CubicInterpolationSE3::computeSout(sot::MatrixHomogeneous& sout, const int& inTime) {
+sot::MatrixHomogeneous& CubicInterpolationSE3::computeSout(
+    sot::MatrixHomogeneous& sout, const int& inTime) {
   double t;
   switch (state_) {
     case 0:
@@ -112,7 +121,9 @@ sot::MatrixHomogeneous& CubicInterpolationSE3::computeSout(sot::MatrixHomogeneou
   return sout;
 }
 
-void CubicInterpolationSE3::setSamplingPeriod(const double& period) { samplingPeriod_ = period; }
+void CubicInterpolationSE3::setSamplingPeriod(const double& period) {
+  samplingPeriod_ = period;
+}
 
 void CubicInterpolationSE3::start(const double& duration) { doStart(duration); }
 

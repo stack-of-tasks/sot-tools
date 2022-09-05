@@ -7,15 +7,15 @@
 #ifndef SOT_TOOLS_SEQPLAY_HH
 #define SOT_TOOLS_SEQPLAY_HH
 
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
 #include <dynamic-graph/entity.h>
 #include <dynamic-graph/factory.h>
 #include <dynamic-graph/linear-algebra.h>
 #include <dynamic-graph/signal.h>
+
+#include <fstream>
+#include <iostream>
 #include <sot/core/matrix-geometry.hh>
+#include <sstream>
 
 namespace dynamicgraph {
 namespace sot {
@@ -50,7 +50,9 @@ class Seqplay : public Entity {
   Vector& computePosture(Vector& pos, const int& t);
   MatrixHomogeneous& computeLeftAnkle(MatrixHomogeneous& la, const int& t);
   MatrixHomogeneous& computeRightAnkle(MatrixHomogeneous& ra, const int& t);
-  Vector& computeAnkleVelocity(Vector& velocity, const std::vector<MatrixHomogeneous>& ankleVector, const int& t);
+  Vector& computeAnkleVelocity(
+      Vector& velocity, const std::vector<MatrixHomogeneous>& ankleVector,
+      const int& t);
   Vector& computeLeftAnkleVel(Vector& velocity, const int& t);
   Vector& computeRightAnkleVel(Vector& velocity, const int& t);
   Vector& computeCom(Vector& com, const int& t);
@@ -61,7 +63,8 @@ class Seqplay : public Entity {
   Vector& computeForceLeftFoot(Vector& force, const int& t);
   Vector& computeForceRightFoot(Vector& force, const int& t);
 
-  void readAnkleFile(std::ifstream&, std::vector<MatrixHomogeneous>&, const std::string&);
+  void readAnkleFile(std::ifstream&, std::vector<MatrixHomogeneous>&,
+                     const std::string&);
   void readForceFile(std::ifstream&, std::vector<Vector>&, const std::string&);
   // 0: motion not started, 1: motion in progress, 2: motion finished
   unsigned int state_;

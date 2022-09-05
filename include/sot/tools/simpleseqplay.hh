@@ -9,16 +9,16 @@
 #ifndef SOT_TOOLS_SIMPLE_SEQPLAY_HH
 #define SOT_TOOLS_SIMPLE_SEQPLAY_HH
 
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
 #include <dynamic-graph/entity.h>
 #include <dynamic-graph/factory.h>
 #include <dynamic-graph/linear-algebra.h>
 #include <dynamic-graph/signal-ptr.h>
 #include <dynamic-graph/signal-time-dependent.h>
+
+#include <fstream>
+#include <iostream>
 #include <sot/core/matrix-geometry.hh>
+#include <sstream>
 
 namespace dynamicgraph {
 namespace sot {

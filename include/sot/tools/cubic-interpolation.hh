@@ -8,9 +8,9 @@
 #define SOT_TOOLS_CUBIC_INTERPOLATION_HH
 
 #include <dynamic-graph/entity.h>
+#include <dynamic-graph/linear-algebra.h>
 #include <dynamic-graph/signal-ptr.h>
 #include <dynamic-graph/signal-time-dependent.h>
-#include <dynamic-graph/linear-algebra.h>
 
 namespace dynamicgraph {
 namespace sot {

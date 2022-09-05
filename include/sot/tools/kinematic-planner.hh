@@ -8,26 +8,26 @@
 #define SOT_TOOLS_KINEMATIC_PLANNER_HH
 
 /* STD */
-#include <string>
-#include <sstream>
-#include <list>
 #include <complex>
+#include <list>
+#include <sstream>
+#include <string>
 
 /* dynamic-graph */
 #include <dynamic-graph/entity.h>
 #include <dynamic-graph/factory.h>
+#include <dynamic-graph/linear-algebra.h>
 #include <dynamic-graph/signal-base.h>
 #include <dynamic-graph/signal-ptr.h>
 #include <dynamic-graph/signal-time-dependent.h>
 
-#include <dynamic-graph/linear-algebra.h>
 #include <sot/core/debug.hh>
 
 /*Eigen*/
 #include <Eigen/StdVector>
 #include <unsupported/Eigen/FFT>
-#include <unsupported/Eigen/Splines>
 #include <unsupported/Eigen/MatrixFunctions>
+#include <unsupported/Eigen/Splines>
 
 /* BOOST */
 //#include <boost/filesystem.hpp>
@@ -41,9 +41,12 @@ using dynamicgraph::Entity;
 class KinematicPlanner : public Entity {
  public:
   DYNAMIC_GRAPH_ENTITY_DECL();
-  typedef std::vector<Eigen::ArrayXd, Eigen::aligned_allocator<Eigen::ArrayXd> > stdVectorofArrayXd;
+  typedef std::vector<Eigen::ArrayXd, Eigen::aligned_allocator<Eigen::ArrayXd> >
+      stdVectorofArrayXd;
 
-  typedef std::vector<Eigen::ArrayXXd, Eigen::aligned_allocator<Eigen::ArrayXXd> > stdVectorofArrayXXd;
+  typedef std::vector<Eigen::ArrayXXd,
+                      Eigen::aligned_allocator<Eigen::ArrayXXd> >
+      stdVectorofArrayXXd;
 
   /*-----SIGNALS--------*/
   typedef int Dummy;
@@ -53,9 +56,12 @@ class KinematicPlanner : public Entity {
 
     dynamicgraph::SignalTimeDependent<Dummy,int> trajectoryReadySINTERN;
 
-    dynamicgraph::SignalTimeDependent<dynamicgraph::Matrix, int> upperBodyJointPositionSOUT;
-    dynamicgraph::SignalTimeDependent<dynamicgraph::Matrix, int> upperBodyJointVelocitySOUT;
-    dynamicgraph::SignalTimeDependent<dynamicgraph::Matrix, int> freeFlyerVelocitySOUT;
+    dynamicgraph::SignalTimeDependent<dynamicgraph::Matrix, int>
+    upperBodyJointPositionSOUT;
+    dynamicgraph::SignalTimeDependent<dynamicgraph::Matrix, int>
+    upperBodyJointVelocitySOUT;
+    dynamicgraph::SignalTimeDependent<dynamicgraph::Matrix, int>
+    freeFlyerVelocitySOUT;
   */
   /* --- CONSTRUCTOR --- */
   KinematicPlanner(const std::string& name);
@@ -95,10 +101,12 @@ class KinematicPlanner : public Entity {
   template <typename Derived>
   void read2DArray(std::string& fileName, Eigen::DenseBase<Derived>& outArr);
 
-  void setParams(const double& _distanceToDrawer, const double& _objectPositionInDrawer, const std::string& dir);
+  void setParams(const double& _distanceToDrawer,
+                 const double& _objectPositionInDrawer, const std::string& dir);
   void loadSourceDelays(const std::string& dir);
-  void loadTrainingParams(const std::string& dir, dynamicgraph::Matrix& q, dynamicgraph::Matrix& beta3,
-                          Eigen::ArrayXd& mwwn, double& sigma2, int& N, int& K);
+  void loadTrainingParams(const std::string& dir, dynamicgraph::Matrix& q,
+                          dynamicgraph::Matrix& beta3, Eigen::ArrayXd& mwwn,
+                          double& sigma2, int& N, int& K);
   dynamicgraph::Vector createSubGoals(double D, double P);
   void delaySources();
   void blending();
@@ -106,7 +114,8 @@ class KinematicPlanner : public Entity {
   void bSplineInterpolate(Eigen::ArrayXXd& tr, int factor);
   int& runKinematicPlanner(int& dummy, int time);
   void goalAdaption(dynamicgraph::Vector& goals, const std::string&);
-  void savitzkyGolayFilter(Eigen::Ref<Eigen::ArrayXXd> allJointTraj, int polyOrder, int frameSize);
+  void savitzkyGolayFilter(Eigen::Ref<Eigen::ArrayXXd> allJointTraj,
+                           int polyOrder, int frameSize);
 
   bool parametersSet;
 };  // class KinematicPlanner

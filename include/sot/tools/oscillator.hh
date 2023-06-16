@@ -29,18 +29,18 @@ class Oscillator : public Entity {
   Oscillator(const std::string name);
 
  protected:
-  double& computeSignal(double& sout, const int& t);
+  double& computeSignal(double& sout, const sigtime_t& t);
   dynamicgraph::Vector& computeVectorSignal(dynamicgraph::Vector& vsout,
-                                            const int& t);
+                                            const sigtime_t& t);
   double value(double dt, double time, double omega, double phase,
                double amplitude, double bias);
 
-  SignalPtr<double, int> angularFrequencySIN_;
-  SignalPtr<double, int> magnitudeSIN_;
-  SignalPtr<double, int> phaseSIN_;
-  SignalPtr<double, int> biasSIN_;
-  SignalTimeDependent<double, int> soutSOUT_;
-  SignalTimeDependent<dynamicgraph::Vector, int> vectorSoutSOUT_;
+  SignalPtr<double, sigtime_t> angularFrequencySIN_;
+  SignalPtr<double, sigtime_t> magnitudeSIN_;
+  SignalPtr<double, sigtime_t> phaseSIN_;
+  SignalPtr<double, sigtime_t> biasSIN_;
+  SignalTimeDependent<double, sigtime_t> soutSOUT_;
+  SignalTimeDependent<dynamicgraph::Vector, sigtime_t> vectorSoutSOUT_;
 
   double epsilon_;
   bool started_;

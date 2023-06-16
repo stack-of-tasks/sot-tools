@@ -95,7 +95,7 @@ class KinematicPlanner : public Entity {
   int nSources1;    // 5
   int nSources2;    // 4
   /*! @} */
-  std::list<dynamicgraph::SignalBase<int>*> genericSignalRefs;
+  std::list<dynamicgraph::SignalBase<sigtime_t>*> genericSignalRefs;
 
   // Load Motion Capture outputs
   template <typename Derived>

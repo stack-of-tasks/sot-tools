@@ -28,10 +28,10 @@ namespace dg = dynamicgraph;
 class SimpleSeqPlay : public dg::Entity {
  public:
   typedef int Dummy;
-  dg::SignalTimeDependent<Dummy, int> firstSINTERN;
-  dg::SignalTimeDependent<dg::Vector, int> postureSOUT_;
+  dg::SignalTimeDependent<Dummy, sigtime_t> firstSINTERN;
+  dg::SignalTimeDependent<dg::Vector, sigtime_t> postureSOUT_;
 
-  dg::SignalPtr<dg::Vector, int> currentPostureSIN_;
+  dg::SignalPtr<dg::Vector, sigtime_t> currentPostureSIN_;
 
   DYNAMIC_GRAPH_ENTITY_DECL();
   SimpleSeqPlay(const std::string& name);
@@ -51,7 +51,7 @@ class SimpleSeqPlay : public dg::Entity {
   // 1: going to the current position to the first position.
   // 2: motion in progress, 3: motion finished
   unsigned int state_;
-  int startTime_;
+  sigtime_t startTime_;
 
   std::vector<dg::Vector> posture_;
   dg::Vector currentPosture_;

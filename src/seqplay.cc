@@ -444,7 +444,7 @@ void Seqplay::start() {
   }
 }
 
-Vector& Seqplay::computePosture(Vector& pos, const int& t) {
+Vector& Seqplay::computePosture(Vector& pos, const sigtime_t& t) {
   if (posture_.size() == 0) {
     throw std::runtime_error(
         "Seqplay posture: Signals not initialized. read files first.");
@@ -465,7 +465,7 @@ Vector& Seqplay::computePosture(Vector& pos, const int& t) {
 }
 
 MatrixHomogeneous& Seqplay::computeLeftAnkle(MatrixHomogeneous& la,
-                                             const int& t) {
+                                             const sigtime_t& t) {
   if (leftAnkle_.size() == 0) {
     throw std::runtime_error(
         "Seqplay leftAnkle: Signals not initialized. read files first.");
@@ -486,7 +486,7 @@ MatrixHomogeneous& Seqplay::computeLeftAnkle(MatrixHomogeneous& la,
 }
 
 MatrixHomogeneous& Seqplay::computeRightAnkle(MatrixHomogeneous& ra,
-                                              const int& t) {
+                                              const sigtime_t& t) {
   if (rightAnkle_.size() == 0) {
     throw std::runtime_error(
         "Seqplay rightAnkle: Signals not initialized. read files first.");
@@ -508,7 +508,7 @@ MatrixHomogeneous& Seqplay::computeRightAnkle(MatrixHomogeneous& ra,
 
 Vector& Seqplay::computeAnkleVelocity(
     Vector& velocity, const std::vector<MatrixHomogeneous>& ankleVector,
-    const int& t) {
+    const sigtime_t& t) {
   velocity.resize(6);
   velocity.setZero();
   std::size_t configId;
@@ -542,7 +542,7 @@ Vector& Seqplay::computeAnkleVelocity(
   return velocity;
 }
 
-Vector& Seqplay::computeLeftAnkleVel(Vector& velocity, const int& t) {
+Vector& Seqplay::computeLeftAnkleVel(Vector& velocity, const sigtime_t& t) {
   // if there is no file, the velocity is computed using finite differences
   if (!facultativeFound_[5]) {
     return computeAnkleVelocity(velocity, leftAnkle_, t);
@@ -563,7 +563,7 @@ Vector& Seqplay::computeLeftAnkleVel(Vector& velocity, const int& t) {
   }
 }
 
-Vector& Seqplay::computeRightAnkleVel(Vector& velocity, const int& t) {
+Vector& Seqplay::computeRightAnkleVel(Vector& velocity, const sigtime_t& t) {
   if (!facultativeFound_[6]) {
     return computeAnkleVelocity(velocity, rightAnkle_, t);
   } else {
@@ -583,7 +583,7 @@ Vector& Seqplay::computeRightAnkleVel(Vector& velocity, const int& t) {
   }
 }
 
-Vector& Seqplay::computeCom(Vector& com, const int& t) {
+Vector& Seqplay::computeCom(Vector& com, const sigtime_t& t) {
   if (com_.size() == 0) {
     throw std::runtime_error(
         "Seqplay com: Signals not initialized. read files first.");
@@ -603,7 +603,7 @@ Vector& Seqplay::computeCom(Vector& com, const int& t) {
   return com;
 }
 
-Vector& Seqplay::computeZMP(Vector& zmp, const int& t) {
+Vector& Seqplay::computeZMP(Vector& zmp, const sigtime_t& t) {
   if (zmp_.size() == 0) {
     throw std::runtime_error("Seqplay zmp: Signals not initialized.");
   }
@@ -622,7 +622,7 @@ Vector& Seqplay::computeZMP(Vector& zmp, const int& t) {
   return zmp;
 }
 
-Vector& Seqplay::computeComdot(Vector& comdot, const int& t) {
+Vector& Seqplay::computeComdot(Vector& comdot, const sigtime_t& t) {
   if (facultativeFound_[2]) {
     std::size_t configId;
     if (state_ == 0) {
@@ -667,7 +667,7 @@ Vector& Seqplay::computeComdot(Vector& comdot, const int& t) {
   }
 }
 
-Vector& Seqplay::computeComddot(Vector& comddot, const int& t) {
+Vector& Seqplay::computeComddot(Vector& comddot, const sigtime_t& t) {
   if (facultativeFound_[3]) {
     std::size_t configId;
     if (state_ == 0) {
@@ -730,7 +730,7 @@ Vector& Seqplay::computeComddot(Vector& comddot, const int& t) {
 
 Vector& Seqplay::computeForceFoot(Vector& force,
                                   const std::vector<Vector>& forceVector,
-                                  const int& t) {
+                                  const sigtime_t& t) {
   if (forceVector.size() == 0) {
     throw std::runtime_error(
         "Seqplay foot force: Force signals not initialized.");
@@ -750,11 +750,11 @@ Vector& Seqplay::computeForceFoot(Vector& force,
   return force;
 }
 
-Vector& Seqplay::computeForceLeftFoot(Vector& force, const int& t) {
+Vector& Seqplay::computeForceLeftFoot(Vector& force, const sigtime_t& t) {
   return computeForceFoot(force, forceLeftFoot_, t);
 }
 
-Vector& Seqplay::computeForceRightFoot(Vector& force, const int& t) {
+Vector& Seqplay::computeForceRightFoot(Vector& force, const sigtime_t& t) {
   return computeForceFoot(force, forceRightFoot_, t);
 }
 

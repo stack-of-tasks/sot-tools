@@ -83,14 +83,14 @@ std::string CubicInterpolation::getDocString() const {
 
 void CubicInterpolation::reset() { state_ = 0; }
 
-Vector& CubicInterpolation::computeSout(Vector& sout, const int& inTime) {
+Vector& CubicInterpolation::computeSout(Vector& sout, const sigtime_t& inTime) {
   double t;
   switch (state_) {
     case 0:
       sout = initSIN_.accessCopy();
       break;
     case 1:
-      t = (inTime - startTime_) * samplingPeriod_;
+      t = (double)(inTime - startTime_) * samplingPeriod_;
       sout = p0_ + (p1_ + (p2_ + p3_ * t) * t) * t;
       if (t >= duration_) {
         state_ = 2;
@@ -104,7 +104,8 @@ Vector& CubicInterpolation::computeSout(Vector& sout, const int& inTime) {
   return sout;
 }
 
-Vector& CubicInterpolation::computeSoutdot(Vector& soutdot, const int& inTime) {
+Vector& CubicInterpolation::computeSoutdot(Vector& soutdot,
+                                           const sigtime_t& inTime) {
   soutdot.resize(initSIN_.accessCopy().size());
   double t;
   switch (state_) {
@@ -112,7 +113,7 @@ Vector& CubicInterpolation::computeSoutdot(Vector& soutdot, const int& inTime) {
       soutdot.setZero();
       break;
     case 1:
-      t = (inTime - startTime_) * samplingPeriod_;
+      t = (double)(inTime - startTime_) * samplingPeriod_;
       soutdot = p1_ + (p2_ * 2 + p3_ * (3 * t)) * t;
       if (t >= duration_) {
         state_ = 2;

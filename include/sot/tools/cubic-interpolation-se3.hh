@@ -33,14 +33,15 @@ class CubicInterpolationSE3 : public Entity {
 
  protected:
   virtual void doStart(const double& duration);
-  dynamicgraph::Signal<MatrixHomogeneous, int> soutSOUT_;
-  dynamicgraph::Signal<Vector, int> soutdotSOUT_;
-  dynamicgraph::SignalPtr<MatrixHomogeneous, int> initSIN_;
-  dynamicgraph::SignalPtr<MatrixHomogeneous, int> goalSIN_;
+  dynamicgraph::Signal<MatrixHomogeneous, sigtime_t> soutSOUT_;
+  dynamicgraph::Signal<Vector, sigtime_t> soutdotSOUT_;
+  dynamicgraph::SignalPtr<MatrixHomogeneous, sigtime_t> initSIN_;
+  dynamicgraph::SignalPtr<MatrixHomogeneous, sigtime_t> goalSIN_;
 
-  MatrixHomogeneous& computeSout(MatrixHomogeneous& sout, const int& inTime);
+  MatrixHomogeneous& computeSout(MatrixHomogeneous& sout,
+                                 const sigtime_t& inTime);
 
-  int startTime_;
+  sigtime_t startTime_;
   double samplingPeriod_;
   double duration_;
   // 0: motion not started, 1: motion in progress, 2: motion finished

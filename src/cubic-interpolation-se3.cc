@@ -93,7 +93,7 @@ std::string CubicInterpolationSE3::getDocString() const {
 void CubicInterpolationSE3::reset() { state_ = 0; }
 
 sot::MatrixHomogeneous& CubicInterpolationSE3::computeSout(
-    sot::MatrixHomogeneous& sout, const int& inTime) {
+    sot::MatrixHomogeneous& sout, const sigtime_t& inTime) {
   double t;
   switch (state_) {
     case 0:

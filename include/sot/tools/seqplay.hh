@@ -26,18 +26,18 @@ using dynamicgraph::Vector;
 using dynamicgraph::sot::MatrixHomogeneous;
 
 class Seqplay : public Entity {
-  Signal<Vector, int> postureSOUT_;
-  Signal<MatrixHomogeneous, int> leftAnkleSOUT_;
-  Signal<MatrixHomogeneous, int> rightAnkleSOUT_;
-  Signal<Vector, int> leftAnkleVelSOUT_;
-  Signal<Vector, int> rightAnkleVelSOUT_;
-  Signal<Vector, int> comSOUT_;
-  Signal<Vector, int> comdotSOUT_;
-  Signal<Vector, int> comddotSOUT_;
-  Signal<Vector, int> forceLeftFootSOUT_;
-  Signal<Vector, int> forceRightFootSOUT_;
+  Signal<Vector, sigtime_t> postureSOUT_;
+  Signal<MatrixHomogeneous, sigtime_t> leftAnkleSOUT_;
+  Signal<MatrixHomogeneous, sigtime_t> rightAnkleSOUT_;
+  Signal<Vector, sigtime_t> leftAnkleVelSOUT_;
+  Signal<Vector, sigtime_t> rightAnkleVelSOUT_;
+  Signal<Vector, sigtime_t> comSOUT_;
+  Signal<Vector, sigtime_t> comdotSOUT_;
+  Signal<Vector, sigtime_t> comddotSOUT_;
+  Signal<Vector, sigtime_t> forceLeftFootSOUT_;
+  Signal<Vector, sigtime_t> forceRightFootSOUT_;
 
-  Signal<Vector, int> zmpSOUT_;
+  Signal<Vector, sigtime_t> zmpSOUT_;
 
   DYNAMIC_GRAPH_ENTITY_DECL();
   Seqplay(const std::string& name);
@@ -47,21 +47,24 @@ class Seqplay : public Entity {
   virtual std::string getDocString() const;
 
  private:
-  Vector& computePosture(Vector& pos, const int& t);
-  MatrixHomogeneous& computeLeftAnkle(MatrixHomogeneous& la, const int& t);
-  MatrixHomogeneous& computeRightAnkle(MatrixHomogeneous& ra, const int& t);
+  Vector& computePosture(Vector& pos, const sigtime_t& t);
+  MatrixHomogeneous& computeLeftAnkle(MatrixHomogeneous& la,
+                                      const sigtime_t& t);
+  MatrixHomogeneous& computeRightAnkle(MatrixHomogeneous& ra,
+                                       const sigtime_t& t);
   Vector& computeAnkleVelocity(
       Vector& velocity, const std::vector<MatrixHomogeneous>& ankleVector,
-      const int& t);
-  Vector& computeLeftAnkleVel(Vector& velocity, const int& t);
-  Vector& computeRightAnkleVel(Vector& velocity, const int& t);
-  Vector& computeCom(Vector& com, const int& t);
-  Vector& computeComdot(Vector& comdot, const int& t);
-  Vector& computeComddot(Vector& comdot, const int& t);
-  Vector& computeZMP(Vector& comdot, const int& t);
-  Vector& computeForceFoot(Vector&, const std::vector<Vector>&, const int&);
-  Vector& computeForceLeftFoot(Vector& force, const int& t);
-  Vector& computeForceRightFoot(Vector& force, const int& t);
+      const sigtime_t& t);
+  Vector& computeLeftAnkleVel(Vector& velocity, const sigtime_t& t);
+  Vector& computeRightAnkleVel(Vector& velocity, const sigtime_t& t);
+  Vector& computeCom(Vector& com, const sigtime_t& t);
+  Vector& computeComdot(Vector& comdot, const sigtime_t& t);
+  Vector& computeComddot(Vector& comdot, const sigtime_t& t);
+  Vector& computeZMP(Vector& comdot, const sigtime_t& t);
+  Vector& computeForceFoot(Vector&, const std::vector<Vector>&,
+                           const sigtime_t&);
+  Vector& computeForceLeftFoot(Vector& force, const sigtime_t& t);
+  Vector& computeForceRightFoot(Vector& force, const sigtime_t& t);
 
   void readAnkleFile(std::ifstream&, std::vector<MatrixHomogeneous>&,
                      const std::string&);
@@ -69,7 +72,7 @@ class Seqplay : public Entity {
   // 0: motion not started, 1: motion in progress, 2: motion finished
   unsigned int state_;
   unsigned int configId_;
-  int startTime_;
+  sigtime_t startTime_;
 
   std::vector<Vector> posture_;
   std::vector<MatrixHomogeneous> leftAnkle_;

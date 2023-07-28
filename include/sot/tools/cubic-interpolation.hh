@@ -32,15 +32,15 @@ class CubicInterpolation : public Entity {
 
  protected:
   virtual void doStart(const double& duration);
-  dynamicgraph::Signal<Vector, int> soutSOUT_;
-  dynamicgraph::Signal<Vector, int> soutdotSOUT_;
-  dynamicgraph::SignalPtr<Vector, int> initSIN_;
-  dynamicgraph::SignalPtr<Vector, int> goalSIN_;
+  dynamicgraph::Signal<Vector, sigtime_t> soutSOUT_;
+  dynamicgraph::Signal<Vector, sigtime_t> soutdotSOUT_;
+  dynamicgraph::SignalPtr<Vector, sigtime_t> initSIN_;
+  dynamicgraph::SignalPtr<Vector, sigtime_t> goalSIN_;
 
-  Vector& computeSout(Vector& sout, const int& inTime);
-  Vector& computeSoutdot(Vector& sout, const int& inTime);
+  Vector& computeSout(Vector& sout, const sigtime_t& inTime);
+  Vector& computeSoutdot(Vector& sout, const sigtime_t& inTime);
 
-  int startTime_;
+  sigtime_t startTime_;
   double samplingPeriod_;
   double duration_;
   // 0: motion not started, 1: motion in progress, 2: motion finished

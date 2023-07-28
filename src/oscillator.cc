@@ -49,7 +49,7 @@ Oscillator::Oscillator(const std::string name)
   vectorSoutSOUT_.setFunction(
       boost::bind(&Oscillator::computeVectorSignal, this, _1, _2));
   soutSOUT_.setNeedUpdateFromAllChildren(true);
-  soutSOUT_.setDependencyType(TimeDependency<int>::ALWAYS_READY);
+  soutSOUT_.setDependencyType(TimeDependency<sigtime_t>::ALWAYS_READY);
 
   addCommand(
       "setTimePeriod",
@@ -104,13 +104,13 @@ double Oscillator::value(double dt, double t, double omega, double phase,
 }
 
 dynamicgraph::Vector& Oscillator::computeVectorSignal(
-    dynamicgraph::Vector& vsout, const int& t) {
+    dynamicgraph::Vector& vsout, const sigtime_t& t) {
   vsout.resize(1);
   vsout(0) = soutSOUT_.access(t);
   return vsout;
 }
 
-double& Oscillator::computeSignal(double& sout, const int& t) {
+double& Oscillator::computeSignal(double& sout, const sigtime_t& t) {
   double eps;
 
   if (continuous_)

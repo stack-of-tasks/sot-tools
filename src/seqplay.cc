@@ -534,9 +534,9 @@ Vector& Seqplay::computeAnkleVelocity(
     R0_ = M0.linear();
     R0t_ = R0_.transpose();
     R1R0t_ = R1_ * R0t_;
-    velocity(3) = (R1R0t_(2, 1)) * dt;
-    velocity(4) = (R1R0t_(0, 2)) * dt;
-    velocity(5) = (R1R0t_(1, 0)) * dt;
+    velocity(3) = (R1R0t_(2, 1))*dt;
+    velocity(4) = (R1R0t_(0, 2))*dt;
+    velocity(5) = (R1R0t_(1, 0))*dt;
   }
 
   return velocity;

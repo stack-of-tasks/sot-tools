@@ -437,7 +437,7 @@ void KinematicPlanner::blending() {
             currentWeight2.push_back(intWeightCSrc);
           }
         }  //(cG!=nGaitCycles-1)
-      }    //(t>nTimeSteps*9/10)
+      }  //(t>nTimeSteps*9/10)
 
       // Start Mixing all sources
       for (int cJ = 0; cJ < nJoints; cJ++) {
